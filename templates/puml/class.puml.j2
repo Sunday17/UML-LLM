@@ -1,0 +1,21 @@
+@startuml
+title 自动生成：类图 (研发中)
+
+class SystemController {
+  + init()
+  + processData()
+}
+
+class UserEntity {
+  - String username
+  - String password
+  + login()
+}
+
+SystemController --> UserEntity : 依赖
+
+note right of SystemController
+  此模块为系统后续扩展点
+  将在后续大模型解析实体属性后映射
+end note
+@enduml

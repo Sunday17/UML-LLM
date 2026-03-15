@@ -1,0 +1,50 @@
+@startuml
+title 自动生成：系统用例图
+left to right direction
+skinparam packageStyle rectangle
+
+' 1. 定义参与者
+{% for actor in actors %}
+actor "{{ actor }}"
+{% endfor %}
+
+' 2. 定义用例
+{% for uc in usecases %}
+usecase "{{ uc }}"
+{% endfor %}
+
+' 3. 参与者与用例的关联
+{% for actor, ucs in relationships.association.items() %}
+    {% for uc in ucs %}
+"{{ actor }}" -- "{{ uc }}"
+    {% endfor %}
+{% endfor %}
+
+' 4. 包含关系 (Include)
+{% for base, targets in relationships.inclusion.items() %}
+    {% for target in targets %}
+"{{ base }}" ..> "{{ target }}" : <<include>>
+    {% endfor %}
+{% endfor %}
+
+' 5. 扩展关系 (Extend)
+{% for base, extensions in relationships.extension.items() %}
+    {% for ext in extensions %}
+"{{ ext }}" ..> "{{ base }}" : <<extend>>
+    {% endfor %}
+{% endfor %}
+
+' 6. 用例泛化
+{% for parent, children in relationships.uc_gen.items() %}
+    {% for child in children %}
+"{{ child }}" --|> "{{ parent }}"
+    {% endfor %}
+{% endfor %}
+
+' 7. 参与者泛化
+{% for parent, children in relationships.act_gen.items() %}
+    {% for child in children %}
+"{{ child }}" --|> "{{ parent }}"
+    {% endfor %}
+{% endfor %}
+@enduml

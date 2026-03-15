@@ -1,0 +1,28 @@
+@startuml
+title 自动生成：系统时序图
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+
+' 1. 声明参与者 (避免有些实体未主动发消息时不显示)
+{% for actor in actors %}
+actor "{{ actor }}"
+{% endfor %}
+
+' 如果你之后从大模型提取了系统内部实体（如数据库、接口），也可以在这里声明为 participant
+' {% for entity in entities %}
+' participant "{{ entity }}"
+' {% endfor %}
+
+' 2. 渲染交互消息流
+{% if interactions %}
+    {% for msg in interactions %}
+"{{ msg.source }}" -> "{{ msg.target }}" : {{ msg.step|default(loop.index) }}. {{ msg.action }}
+    {% endfor %}
+{% else %}
+note over "系统"
+  暂无交互数据。
+  请检查大模型是否成功提取了 interactions 数组。
+end note
+{% endif %}
+
+@enduml

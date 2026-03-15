@@ -75,7 +75,7 @@ def main():
         
     # 5. 生成结果
     final_state = app.get_state(config).values
-    generate_outputs(final_state, json_output_path, txt_output_path)
-
+    generate_outputs(final_state, "output", file_name)
+    
 if __name__ == "__main__":
     main()
