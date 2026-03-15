@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+actor "用户"
+usecase "修改内容"
+usecase "查询内容"
+usecase "增加内容"
+usecase "一键复制内容"
+usecase "删除内容"
+usecase "关键词检索内容"
+usecase "分类存储内容"
+"用户" -- "分类存储内容"
+"用户" -- "关键词检索内容"
+"用户" -- "一键复制内容"
+"用户" -- "增加内容"
+"用户" -- "删除内容"
+"用户" -- "修改内容"
+"用户" -- "查询内容"
+@enduml
