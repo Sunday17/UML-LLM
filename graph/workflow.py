@@ -7,14 +7,13 @@ from graph.state import UMLState
 from agents.usecase_agents import extract_entities_node, extract_relationships_node
 # 导入新增的类图 Agents
 from agents.class_agents import extract_classes_node, extract_class_details_node, extract_class_rels_node
+from agents.sequence_agents import extract_seq_participants_node, extract_seq_messages_node
 
 def route_start(state: UMLState):
-    """根据当前指定的任务，进入对应的流水线"""
     diagram = state.get("current_diagram")
-    if diagram == "usecase":
-        return "entity_agent"
-    elif diagram == "class":
-        return "class_entity_agent"
+    if diagram == "usecase": return "entity_agent"
+    elif diagram == "class": return "class_entity_agent"
+    elif diagram == "sequence": return "seq_participant_agent" # 新增路由分支
     return END
 
 def build_graph():
@@ -29,6 +28,10 @@ def build_graph():
     workflow.add_node("class_entity_agent", extract_classes_node)
     workflow.add_node("class_attr_method_agent", extract_class_details_node)
     workflow.add_node("class_rel_agent", extract_class_rels_node)
+
+    # 注册时序图节点
+    workflow.add_node("seq_participant_agent", extract_seq_participants_node)
+    workflow.add_node("seq_message_agent", extract_seq_messages_node)
     
     # 3. 从 START 路由到指定的流水线
     workflow.add_conditional_edges(
@@ -37,6 +40,7 @@ def build_graph():
         {
             "entity_agent": "entity_agent",
             "class_entity_agent": "class_entity_agent",
+            "seq_participant_agent": "seq_participant_agent",
             END: END
         }
     )
@@ -49,6 +53,10 @@ def build_graph():
     workflow.add_edge("class_entity_agent", "class_attr_method_agent")
     workflow.add_edge("class_attr_method_agent", "class_rel_agent")
     workflow.add_edge("class_rel_agent", END)
+
+    # 时序图内部流转
+    workflow.add_edge("seq_participant_agent", "seq_message_agent")
+    workflow.add_edge("seq_message_agent", END)
     
     # --- 6. 开启记忆存储 (用于支持 Human-in-the-loop) ---
     memory = MemorySaver()

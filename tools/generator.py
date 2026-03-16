@@ -16,38 +16,18 @@ def _to_dict(pair_list):
 
 def render_plantuml_to_image(puml_code: str, img_path: str):
     """调用 PlantUML Server 将 puml 文本直接渲染为 png 图片"""
-    server_urls = [
-        # Prefer HTTPS + explicit PNG endpoint
-        "https://www.plantuml.com/plantuml/png/",
-        # Fallbacks (some mirrors/installs accept these)
-        "http://www.plantuml.com/plantuml/png/",
-        "https://www.plantuml.com/plantuml/img/",
-        "http://www.plantuml.com/plantuml/img/",
-    ]
-
-    last_err = None
-    for url in server_urls:
-        try:
-            server = PlantUML(url=url)
-            print(f"⏳ 正在请求渲染图片: {os.path.basename(img_path)} ...")
-            img_bytes = server.processes(puml_code)
-
-            with open(img_path, "wb") as f:
-                f.write(img_bytes)
-
-            print(f"✅ 图片渲染成功: {img_path}")
-            return
-        except Exception as e:
-            last_err = e
-
-    # Avoid relying on exception __str__ implementations that may be buggy
-    err_text = None
     try:
-        err_text = str(last_err)
-    except Exception:
-        err_text = repr(last_err)
-
-    print(f"❌ 图片渲染失败 ({os.path.basename(img_path)}): {err_text}")
+        server = PlantUML(url='http://www.plantuml.com/plantuml/img/')
+        print(f"⏳ 正在请求渲染图片: {os.path.basename(img_path)} ...")
+        
+        img_bytes = server.processes(puml_code)
+        
+        with open(img_path, "wb") as f:
+            f.write(img_bytes)
+            
+        print(f"✅ 图片渲染成功: {img_path}")
+    except Exception as e:
+        print(f"❌ 图片渲染失败 ({os.path.basename(img_path)}): {e}")
 
 
 def _render_and_save(target: str, data_context: dict, output_dir: str, file_name_prefix: str):
@@ -113,11 +93,40 @@ def generate_class_outputs(state: dict, output_dir: str, file_name_prefix: str):
     }
     _render_and_save("class", data_context, output_dir, file_name_prefix)
 
-# def generate_sequence_outputs(state: dict, output_dir: str, file_name_prefix: str):
-#     """专用生成：时序图产物 (多用例可能需要稍作调整，此处预留为统一结构)"""
-#     data_context = {
-#         "actors": state.get("actors", []),
-#         "classes": state.get("classes", []),
-#         "sequence_data": state.get("sequence_data", {})
-#     }
-#     _render_and_save("sequence", data_context, output_dir, file_name_prefix)
+
+def generate_sequence_outputs(state: dict, output_dir: str, file_name_prefix: str):
+    """专用生成：批量生成多个时序图并打包到文件夹"""
+    sequence_data = state.get("sequence_data", {})
+    if not sequence_data:
+        print("⚠️ 没找到时序图数据。")
+        return
+
+    # 为当前项目的时序图单独建一个文件夹
+    seq_dir = os.path.join(output_dir, f"{file_name_prefix}_sequence_diagrams")
+    os.makedirs(seq_dir, exist_ok=True)
+    
+    print(f"\n📂 正在将 {len(sequence_data)} 个时序图打包至: {seq_dir}")
+    
+    env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
+    template = env.get_template("sequence.puml.j2")
+    
+    for uc_name, data in sequence_data.items():
+        # 清理文件名中的非法字符
+        safe_name = uc_name.replace("/", "").replace("\\", "")
+        
+        data_context = {
+            "actors": data.get("participants", []),
+            "interactions": data.get("interactions", [])
+        }
+        
+        puml_path = os.path.join(seq_dir, f"{safe_name}.puml")
+        img_path = os.path.join(seq_dir, f"{safe_name}.png")
+        
+        try:
+            puml_code = template.render(data_context)
+            with open(puml_path, "w", encoding='utf-8') as f:
+                f.write(puml_code)
+            
+            render_plantuml_to_image(puml_code, img_path)
+        except Exception as e:
+            print(f"⚠️ [{uc_name}] 时序图生成失败: {e}")

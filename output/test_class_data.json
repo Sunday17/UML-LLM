@@ -3,141 +3,78 @@
         "User",
         "Book",
         "BorrowRecord",
-        "BorrowOrder",
-        "BookCategory",
-        "LibraryLocation",
-        "OverdueFee",
-        "OperationLog",
-        "StatisticsReport",
-        "BookInventory"
+        "Admin",
+        "Student",
+        "Teacher"
     ],
     "class_details": {
         "User": {
             "attributes": [
-                "student_id",
-                "name",
-                "password",
-                "account_status"
+                "用户名",
+                "密码",
+                "用户类型"
             ],
             "methods": [
-                "register()",
-                "login()",
-                "recoverPassword()"
+                "登录()",
+                "查询借阅记录()"
             ]
         },
         "Book": {
             "attributes": [
-                "title",
-                "author",
-                "isbn",
-                "category",
-                "inventory_count",
-                "location",
-                "borrow_status"
+                "书名",
+                "作者",
+                "ISBN",
+                "可借状态"
             ],
             "methods": [
-                "getDetails()",
-                "updateStatus()"
+                "检索()",
+                "借阅()",
+                "归还()"
             ]
         },
         "BorrowRecord": {
             "attributes": [
-                "record_id",
-                "user_id",
-                "book_id",
-                "borrow_date",
-                "due_date",
-                "return_date",
-                "overdue_fee"
+                "借阅日期",
+                "应还日期",
+                "实际归还日期",
+                "逾期状态"
             ],
             "methods": [
-                "calculateOverdueFee()",
-                "updateReturnStatus()"
+                "计算逾期()",
+                "更新状态()"
             ]
         },
-        "BorrowOrder": {
+        "Admin": {
             "attributes": [
-                "order_id",
-                "user_id",
-                "book_id",
-                "borrow_date",
-                "order_status"
+                "管理员ID",
+                "权限级别"
             ],
             "methods": [
-                "generateOrder()",
-                "validateBorrowRights()"
+                "录入图书()",
+                "修改图书信息()",
+                "下架图书()"
             ]
         },
-        "BookCategory": {
+        "Student": {
             "attributes": [
-                "category_id",
-                "category_name",
-                "description"
+                "学号",
+                "学院",
+                "可借数量"
             ],
             "methods": [
-                "getBooksInCategory()",
-                "addCategory()"
+                "借阅图书()",
+                "查询当前借阅()"
             ]
         },
-        "LibraryLocation": {
+        "Teacher": {
             "attributes": [
-                "location_id",
-                "location_name",
-                "description"
+                "工号",
+                "院系",
+                "可借数量"
             ],
             "methods": [
-                "getLocationDetails()",
-                "updateLocation()"
-            ]
-        },
-        "OverdueFee": {
-            "attributes": [
-                "fee_id",
-                "borrow_record_id",
-                "amount",
-                "status"
-            ],
-            "methods": [
-                "calculateFee()",
-                "markAsPaid()"
-            ]
-        },
-        "OperationLog": {
-            "attributes": [
-                "log_id",
-                "operation_type",
-                "timestamp",
-                "user_id",
-                "details"
-            ],
-            "methods": [
-                "logOperation()",
-                "getLogs()"
-            ]
-        },
-        "StatisticsReport": {
-            "attributes": [
-                "report_id",
-                "period",
-                "data",
-                "generation_date"
-            ],
-            "methods": [
-                "generateReport()",
-                "exportReport()"
-            ]
-        },
-        "BookInventory": {
-            "attributes": [
-                "inventory_id",
-                "book_id",
-                "total_count",
-                "available_count",
-                "location"
-            ],
-            "methods": [
-                "updateInventory()",
-                "checkAvailability()"
+                "借阅图书()",
+                "查询历史记录()"
             ]
         }
     },
@@ -145,71 +82,34 @@
         "association": [
             [
                 "User",
-                "BorrowRecord"
+                "Book"
             ],
             [
                 "User",
-                "BorrowOrder"
-            ],
-            [
-                "Book",
                 "BorrowRecord"
             ],
             [
-                "Book",
-                "BookCategory"
-            ],
-            [
-                "Book",
-                "LibraryLocation"
-            ],
-            [
-                "Book",
-                "BookInventory"
-            ],
-            [
-                "BorrowRecord",
-                "OverdueFee"
-            ],
-            [
-                "BorrowOrder",
-                "BorrowRecord"
-            ],
-            [
-                "StatisticsReport",
-                "BorrowRecord"
-            ],
-            [
-                "StatisticsReport",
+                "Admin",
                 "Book"
             ]
         ],
-        "generalization": [],
-        "composition": [
+        "generalization": [
             [
-                "BorrowOrder",
-                "BorrowRecord"
-            ]
-        ],
-        "aggregation": [
-            [
-                "Book",
-                "BookInventory"
-            ]
-        ],
-        "dependency": [
-            [
-                "OperationLog",
+                "Student",
                 "User"
             ],
             [
-                "OperationLog",
-                "Book"
-            ],
-            [
-                "StatisticsReport",
-                "BookInventory"
+                "Teacher",
+                "User"
             ]
-        ]
+        ],
+        "composition": [
+            [
+                "BorrowRecord",
+                "Book"
+            ]
+        ],
+        "aggregation": [],
+        "dependency": []
     }
 }

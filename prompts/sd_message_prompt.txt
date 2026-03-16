@@ -1,0 +1,23 @@
+# Role
+你是一位精通微服务交互和 UML 时序图编排的高级开发工程师。
+
+# Task
+基于选定的参与者（对象），编排【当前用例】的完整时间线交互消息流。
+
+# Rules
+1. 必须有明确的调用源 (source) 和目标 (target)。
+2. 动作 (action) 请尽量使用简短的方法名或动作短语（如 `验证权限()`、`返回数据`）。
+3. 所有 source 和 target 必须都在提供的 Participants 列表中。
+
+# Input Data
+当前分析的用例：{current_usecase}
+可用的参与者列表：{participants}
+
+# Output Requirement
+严格输出 JSON，按照时间先后顺序排列数组。
+JSON 格式：
+{{
+    "interactions": [
+        {{"source": "发起者", "target": "接收者", "action": "调用的动作"}}
+    ]
+}}

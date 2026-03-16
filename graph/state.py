@@ -16,3 +16,5 @@ class UMLState(TypedDict):
     classes: List[str]                # 提取的实体类列表 (需人工确认)
     class_details: Dict[str, Any]     # 类的属性和方法，例如 {"User": {"attributes": [], "methods": []}}
     class_relationships: Dict[str, Any] # 类之间的关系 (泛化、关联、依赖等)
+
+    sequence_data: Dict[str, Dict[str, Any]]

@@ -11,130 +11,71 @@ skinparam ranksep 50
 
 class "User" {
   ' 属性区 (默认设为 private: -)
-  - student_id;
-  - name;
-  - password;
-  - account_status;
+  - 用户名;
+  - 密码;
+  - 用户类型;
   
   ' 方法区 (默认设为 public: +)
-  + register();
-  + login();
-  + recoverPassword();
+  + 登录();
+  + 查询借阅记录();
 }
 
 class "Book" {
   ' 属性区 (默认设为 private: -)
-  - title;
-  - author;
-  - isbn;
-  - category;
-  - inventory_count;
-  - location;
-  - borrow_status;
+  - 书名;
+  - 作者;
+  - ISBN;
+  - 可借状态;
   
   ' 方法区 (默认设为 public: +)
-  + getDetails();
-  + updateStatus();
+  + 检索();
+  + 借阅();
+  + 归还();
 }
 
 class "BorrowRecord" {
   ' 属性区 (默认设为 private: -)
-  - record_id;
-  - user_id;
-  - book_id;
-  - borrow_date;
-  - due_date;
-  - return_date;
-  - overdue_fee;
+  - 借阅日期;
+  - 应还日期;
+  - 实际归还日期;
+  - 逾期状态;
   
   ' 方法区 (默认设为 public: +)
-  + calculateOverdueFee();
-  + updateReturnStatus();
+  + 计算逾期();
+  + 更新状态();
 }
 
-class "BorrowOrder" {
+class "Admin" {
   ' 属性区 (默认设为 private: -)
-  - order_id;
-  - user_id;
-  - book_id;
-  - borrow_date;
-  - order_status;
+  - 管理员ID;
+  - 权限级别;
   
   ' 方法区 (默认设为 public: +)
-  + generateOrder();
-  + validateBorrowRights();
+  + 录入图书();
+  + 修改图书信息();
+  + 下架图书();
 }
 
-class "BookCategory" {
+class "Student" {
   ' 属性区 (默认设为 private: -)
-  - category_id;
-  - category_name;
-  - description;
+  - 学号;
+  - 学院;
+  - 可借数量;
   
   ' 方法区 (默认设为 public: +)
-  + getBooksInCategory();
-  + addCategory();
+  + 借阅图书();
+  + 查询当前借阅();
 }
 
-class "LibraryLocation" {
+class "Teacher" {
   ' 属性区 (默认设为 private: -)
-  - location_id;
-  - location_name;
-  - description;
+  - 工号;
+  - 院系;
+  - 可借数量;
   
   ' 方法区 (默认设为 public: +)
-  + getLocationDetails();
-  + updateLocation();
-}
-
-class "OverdueFee" {
-  ' 属性区 (默认设为 private: -)
-  - fee_id;
-  - borrow_record_id;
-  - amount;
-  - status;
-  
-  ' 方法区 (默认设为 public: +)
-  + calculateFee();
-  + markAsPaid();
-}
-
-class "OperationLog" {
-  ' 属性区 (默认设为 private: -)
-  - log_id;
-  - operation_type;
-  - timestamp;
-  - user_id;
-  - details;
-  
-  ' 方法区 (默认设为 public: +)
-  + logOperation();
-  + getLogs();
-}
-
-class "StatisticsReport" {
-  ' 属性区 (默认设为 private: -)
-  - report_id;
-  - period;
-  - data;
-  - generation_date;
-  
-  ' 方法区 (默认设为 public: +)
-  + generateReport();
-  + exportReport();
-}
-
-class "BookInventory" {
-  ' 属性区 (默认设为 private: -)
-  - inventory_id;
-  - book_id;
-  - total_count;
-  - available_count;
-  - location;
-  
-  ' 方法区 (默认设为 public: +)
-  + updateInventory();
-  + checkAvailability();
+  + 借阅图书();
+  + 查询历史记录();
 }
 
 
@@ -145,51 +86,33 @@ class "BookInventory" {
 
 ' 2.1 Association (关联关系: --)
 
+"User" -- "Book"
+
 "User" -- "BorrowRecord"
 
-"User" -- "BorrowOrder"
-
-"Book" -- "BorrowRecord"
-
-"Book" -- "BookCategory"
-
-"Book" -- "LibraryLocation"
-
-"Book" -- "BookInventory"
-
-"BorrowRecord" -- "OverdueFee"
-
-"BorrowOrder" -- "BorrowRecord"
-
-"StatisticsReport" -- "BorrowRecord"
-
-"StatisticsReport" -- "Book"
+"Admin" -- "Book"
 
 
 ' 2.2 Generalization (泛化/继承关系: --|>)
 ' 注意：PlantUML 中箭头指向父类，所以如果是 ["子类", "父类"]，用 --|>
 
+"Student" --|> "User"
+
+"Teacher" --|> "User"
+
 
 ' 2.3 Composition (组合关系: *--)
 ' 注意：强整体拥有部分，如果是 ["整体", "部分"]，用 *--
 
-"BorrowOrder" *-- "BorrowRecord"
+"BorrowRecord" *-- "Book"
 
 
 ' 2.4 Aggregation (聚合关系: o--)
 ' 注意：弱整体包含部分，如果是 ["整体", "部分"]，用 o--
 
-"Book" o-- "BookInventory"
-
 
 ' 2.5 Dependency (依赖关系: ..>)
 ' 注意：源类依赖目标类，如果是 ["源类", "目标类"]，用 ..>
-
-"OperationLog" ..> "User"
-
-"OperationLog" ..> "Book"
-
-"StatisticsReport" ..> "BookInventory"
 
 
 @enduml
