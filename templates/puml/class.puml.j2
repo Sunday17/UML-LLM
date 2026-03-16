@@ -1,21 +1,61 @@
 @startuml
-title 自动生成：类图 (研发中)
+title 自动生成：系统类图
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
 
-class SystemController {
-  + init()
-  + processData()
+' ==========================================
+' 1. 定义类及其属性与方法
+' ==========================================
+{% for cls in classes %}
+class "{{ cls }}" {
+{%- if class_details is defined and cls in class_details %}
+  ' 属性区 (默认设为 private: -)
+  {%- for attr in class_details[cls].get("attributes", []) %}
+  - {{ attr }}
+  {%- endfor %}
+  
+  ' 方法区 (默认设为 public: +)
+  {%- for method in class_details[cls].get("methods", []) %}
+  + {{ method }}
+  {%- endfor %}
+{%- endif %}
 }
+{% endfor %}
 
-class UserEntity {
-  - String username
-  - String password
-  + login()
-}
 
-SystemController --> UserEntity : 依赖
+' ==========================================
+' 2. 定义类之间的关系
+' ==========================================
 
-note right of SystemController
-  此模块为系统后续扩展点
-  将在后续大模型解析实体属性后映射
-end note
+' 2.1 Association (关联关系: --)
+{% for rel in class_relationships.get("association", []) %}
+"{{ rel[0] }}" -- "{{ rel[1] }}"
+{% endfor %}
+
+' 2.2 Generalization (泛化/继承关系: --|>)
+' 注意：PlantUML 中箭头指向父类，所以如果是 ["子类", "父类"]，用 --|>
+{% for rel in class_relationships.get("generalization", []) %}
+"{{ rel[0] }}" --|> "{{ rel[1] }}"
+{% endfor %}
+
+' 2.3 Composition (组合关系: *--)
+' 注意：强整体拥有部分，如果是 ["整体", "部分"]，用 *--
+{% for rel in class_relationships.get("composition", []) %}
+"{{ rel[0] }}" *-- "{{ rel[1] }}"
+{% endfor %}
+
+' 2.4 Aggregation (聚合关系: o--)
+' 注意：弱整体包含部分，如果是 ["整体", "部分"]，用 o--
+{% for rel in class_relationships.get("aggregation", []) %}
+"{{ rel[0] }}" o-- "{{ rel[1] }}"
+{% endfor %}
+
+' 2.5 Dependency (依赖关系: ..>)
+' 注意：源类依赖目标类，如果是 ["源类", "目标类"]，用 ..>
+{% for rel in class_relationships.get("dependency", []) %}
+"{{ rel[0] }}" ..> "{{ rel[1] }}"
+{% endfor %}
+
 @enduml

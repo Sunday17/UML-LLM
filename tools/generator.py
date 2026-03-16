@@ -15,15 +15,13 @@ def _to_dict(pair_list):
     return d
 
 def render_plantuml_to_image(puml_code: str, img_path: str):
-    """调用 PlantUML Server 将 puml 文本直接渲染为 png 图片 (修复 Windows GBK 编码问题)"""
+    """调用 PlantUML Server 将 puml 文本直接渲染为 png 图片"""
     try:
         server = PlantUML(url='http://www.plantuml.com/plantuml/img/')
         print(f"⏳ 正在请求渲染图片: {os.path.basename(img_path)} ...")
         
-        # 【修改点 1】直接传入内存中的代码字符串，获取服务器返回的图片字节流
         img_bytes = server.processes(puml_code)
         
-        # 【修改点 2】用二进制写入模式 ("wb") 保存图片文件
         with open(img_path, "wb") as f:
             f.write(img_bytes)
             
@@ -31,10 +29,46 @@ def render_plantuml_to_image(puml_code: str, img_path: str):
     except Exception as e:
         print(f"❌ 图片渲染失败 ({os.path.basename(img_path)}): {e}")
 
-def generate_outputs(state: dict, output_dir: str, file_name_prefix: str):
-    """
-    生成最终产物：当前版本仅实现用例图的 PlantUML 代码生成与图片渲染
-    """
+
+def _render_and_save(target: str, data_context: dict, output_dir: str, file_name_prefix: str):
+    """通用的 JSON 保存、模板加载与 PUML/PNG 生成逻辑"""
+    os.makedirs(output_dir, exist_ok=True)
+    target_upper = target.upper()
+    
+    # 1. 动态生成 JSON 文件名并保存
+    json_path = os.path.join(output_dir, f"{file_name_prefix}_{target}_data.json")
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(data_context, f, indent=4, ensure_ascii=False)
+    print(f"\n💾 [{target_upper}] 结构化数据基座已保存: {json_path}")
+
+    # 2. 加载对应的 Jinja2 模板
+    try:
+        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
+        template_file = f"{target}.puml.j2"
+        template = env.get_template(template_file)
+    except Exception as e:
+        print(f"❌ [{target_upper}] 模板加载失败，请检查 {TEMPLATE_DIR}/{template_file} 是否存在。错误信息: {e}")
+        return
+
+    # 3. 渲染并生成产物文件
+    puml_path = os.path.join(output_dir, f"{file_name_prefix}_{target}.puml")
+    img_path = os.path.join(output_dir, f"{file_name_prefix}_{target}.png")
+    
+    try:
+        puml_code = template.render(data_context)
+        with open(puml_path, "w", encoding='utf-8') as f:
+            f.write(puml_code)
+        print(f"📄 [{target_upper}] PUML代码已生成: {puml_path}")
+        
+        render_plantuml_to_image(puml_code, img_path)
+    except Exception as e:
+        print(f"⚠️ [{target_upper}] 生成或渲染异常: {e}")
+
+    print(f"🎉 自动化建模流水线 ({target} 环节) 执行完毕！\n")
+
+
+def generate_usecase_outputs(state: dict, output_dir: str, file_name_prefix: str):
+    """专用生成：用例图产物"""
     rels = state.get("relationships", {})
     data_context = {
         "actors": state.get("actors", []),
@@ -48,35 +82,22 @@ def generate_outputs(state: dict, output_dir: str, file_name_prefix: str):
             "association": state.get("entities", {}) 
         }
     }
+    _render_and_save("usecase", data_context, output_dir, file_name_prefix)
 
-    os.makedirs(output_dir, exist_ok=True)
-    json_path = os.path.join(output_dir, f"{file_name_prefix}_data.json")
-    with open(json_path, 'w', encoding='utf-8') as f:
-        json.dump(data_context, f, indent=4, ensure_ascii=False)
-    print(f"\n💾 结构化数据基座已保存: {json_path}")
+def generate_class_outputs(state: dict, output_dir: str, file_name_prefix: str):
+    """专用生成：类图产物"""
+    data_context = {
+        "classes": state.get("classes", []),
+        "class_details": state.get("class_details", {}),
+        "class_relationships": state.get("class_relationships", {})
+    }
+    _render_and_save("class", data_context, output_dir, file_name_prefix)
 
-    try:
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-        template_file = "usecase.puml.j2"
-        template = env.get_template(template_file)
-    except Exception as e:
-        print(f"❌ 模板加载失败，请检查 {TEMPLATE_DIR}/{template_file} 是否存在。错误信息: {e}")
-        return
-
-    puml_path = os.path.join(output_dir, f"{file_name_prefix}_usecase.puml")
-    img_path = os.path.join(output_dir, f"{file_name_prefix}_usecase.png")
-    
-    try:
-        # 注入数据，渲染 PUML 代码
-        puml_code = template.render(data_context)
-        with open(puml_path, "w", encoding='utf-8') as f:
-            f.write(puml_code)
-        print(f"📄 [USECASE] PUML代码已生成: {puml_path}")
-        
-        # 【修改点 3】这里不再传文件路径 puml_path，而是直接传 puml_code 字符串
-        render_plantuml_to_image(puml_code, img_path)
-        
-    except Exception as e:
-        print(f"⚠️ [USECASE] 生成或渲染异常: {e}")
-
-    print("\n🎉 自动化建模流水线 (用例图环节) 执行完毕！")
+# def generate_sequence_outputs(state: dict, output_dir: str, file_name_prefix: str):
+#     """专用生成：时序图产物 (多用例可能需要稍作调整，此处预留为统一结构)"""
+#     data_context = {
+#         "actors": state.get("actors", []),
+#         "classes": state.get("classes", []),
+#         "sequence_data": state.get("sequence_data", {})
+#     }
+#     _render_and_save("sequence", data_context, output_dir, file_name_prefix)

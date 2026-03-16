@@ -1,0 +1,102 @@
+{
+    "classes": [
+        "User",
+        "Habit",
+        "CheckInRecord",
+        "AchievementBadge",
+        "MonthlyStatistics"
+    ],
+    "class_details": {
+        "User": {
+            "attributes": [
+                "昵称",
+                "密码",
+                "用户ID"
+            ],
+            "methods": [
+                "创建习惯()",
+                "设置每日目标()",
+                "查看统计()"
+            ]
+        },
+        "Habit": {
+            "attributes": [
+                "习惯名称",
+                "习惯描述",
+                "创建时间"
+            ],
+            "methods": [
+                "更新习惯()",
+                "删除习惯()"
+            ]
+        },
+        "CheckInRecord": {
+            "attributes": [
+                "打卡日期",
+                "打卡时间",
+                "打卡状态"
+            ],
+            "methods": [
+                "记录打卡()",
+                "查询打卡记录()"
+            ]
+        },
+        "AchievementBadge": {
+            "attributes": [
+                "勋章名称",
+                "获得条件",
+                "获得日期"
+            ],
+            "methods": [
+                "授予勋章()",
+                "显示勋章()"
+            ]
+        },
+        "MonthlyStatistics": {
+            "attributes": [
+                "月份",
+                "打卡天数",
+                "连续打卡天数"
+            ],
+            "methods": [
+                "生成统计()",
+                "显示统计()"
+            ]
+        }
+    },
+    "class_relationships": {
+        "association": [
+            [
+                "User",
+                "Habit"
+            ],
+            [
+                "User",
+                "AchievementBadge"
+            ],
+            [
+                "Habit",
+                "CheckInRecord"
+            ]
+        ],
+        "generalization": [],
+        "composition": [
+            [
+                "Habit",
+                "CheckInRecord"
+            ]
+        ],
+        "aggregation": [
+            [
+                "User",
+                "Habit"
+            ]
+        ],
+        "dependency": [
+            [
+                "MonthlyStatistics",
+                "CheckInRecord"
+            ]
+        ]
+    }
+}

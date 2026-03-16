@@ -1,33 +1,49 @@
 @startuml
 title 自动生成：系统用例图
 left to right direction
-skinparam packageStyle rectangle
 
-' 1. 定义参与者
+' --- 1. 优化排版与样式参数 ---
+skinparam packageStyle rectangle
+skinparam nodesep 15
+skinparam ranksep 40
+skinparam usecase {
+    BackgroundColor #F9F9F9
+    BorderColor #333333
+    ArrowColor #666666
+}
+skinparam actor {
+    BackgroundColor #FAFAFA
+    BorderColor #333333
+}
+
+' --- 2. 定义参与者 ---
 
 actor "用户"
 
 
-' 2. 定义用例
+' --- 3. 定义系统边界与用例 ---
+' 【优化点】使用 rectangle 包裹用例，强制参与者在左外侧，用例在右内侧，排版瞬间整洁
+rectangle "系统核心功能" {
 
-usecase "完成打卡"
+    usecase "设置每日目标"
 
-usecase "接收打卡提醒"
+    usecase "查看连续打卡天数"
 
-usecase "查看成就勋章"
+    usecase "接收打卡提醒"
 
-usecase "查看连续打卡天数"
+    usecase "完成打卡"
 
-usecase "查看数据可视化"
+    usecase "创建自定义习惯"
 
-usecase "查看月度统计"
+    usecase "查看成就勋章"
 
-usecase "创建自定义习惯"
+    usecase "查看数据可视化"
 
-usecase "设置每日目标"
+    usecase "查看月度统计"
 
+}
 
-' 3. 参与者与用例的关联
+' --- 4. 参与者与用例的关联 ---
 
     
 "用户" -- "创建自定义习惯"
@@ -48,7 +64,8 @@ usecase "设置每日目标"
     
 
 
-' 4. 包含关系 (Include)
+' --- 5. 包含关系 (Include) ---
+' 规范：基础用例 -> 包含用例
 
     
 "完成打卡" ..> "查看连续打卡天数" : <<include>>
@@ -61,18 +78,21 @@ usecase "设置每日目标"
     
 
 
-' 5. 扩展关系 (Extend)
+' --- 6. 扩展关系 (Extend) ---
+' 规范：扩展用例 -> 基础用例
+' 【核心修复】使用 <.. 语法。这会让 PlantUML 把 Base 画在左边，Ext 画在右边，但箭头反向指向 Base。完美解决布局混乱！
 
     
-"查看成就勋章" ..> "完成打卡" : <<extend>>
+"完成打卡" <.. "查看成就勋章" : <<extend>>
     
-"接收打卡提醒" ..> "完成打卡" : <<extend>>
+"完成打卡" <.. "接收打卡提醒" : <<extend>>
     
 
 
-' 6. 用例泛化
+' --- 7. 用例泛化 ---
+' 【排版修复】使用 <|-- 让父类在左，子类在右，箭头指向父类
 
 
-' 7. 参与者泛化
+' --- 8. 参与者泛化 ---
 
 @enduml

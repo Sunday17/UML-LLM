@@ -1,0 +1,105 @@
+@startuml
+title 自动生成：系统类图
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 50
+
+' ==========================================
+' 1. 定义类及其属性与方法
+' ==========================================
+
+class "User" {
+  ' 属性区 (默认设为 private: -)
+  - 昵称
+  - 密码
+  - 用户ID
+  
+  ' 方法区 (默认设为 public: +)
+  + 创建习惯()
+  + 设置每日目标()
+  + 查看统计()
+}
+
+class "Habit" {
+  ' 属性区 (默认设为 private: -)
+  - 习惯名称
+  - 习惯描述
+  - 创建时间
+  
+  ' 方法区 (默认设为 public: +)
+  + 更新习惯()
+  + 删除习惯()
+}
+
+class "CheckInRecord" {
+  ' 属性区 (默认设为 private: -)
+  - 打卡日期
+  - 打卡时间
+  - 打卡状态
+  
+  ' 方法区 (默认设为 public: +)
+  + 记录打卡()
+  + 查询打卡记录()
+}
+
+class "AchievementBadge" {
+  ' 属性区 (默认设为 private: -)
+  - 勋章名称
+  - 获得条件
+  - 获得日期
+  
+  ' 方法区 (默认设为 public: +)
+  + 授予勋章()
+  + 显示勋章()
+}
+
+class "MonthlyStatistics" {
+  ' 属性区 (默认设为 private: -)
+  - 月份
+  - 打卡天数
+  - 连续打卡天数
+  
+  ' 方法区 (默认设为 public: +)
+  + 生成统计()
+  + 显示统计()
+}
+
+
+
+' ==========================================
+' 2. 定义类之间的关系
+' ==========================================
+
+' 2.1 Association (关联关系: --)
+
+"User" -- "Habit"
+
+"User" -- "AchievementBadge"
+
+"Habit" -- "CheckInRecord"
+
+
+' 2.2 Generalization (泛化/继承关系: --|>)
+' 注意：PlantUML 中箭头指向父类，所以如果是 ["子类", "父类"]，用 --|>
+
+
+' 2.3 Composition (组合关系: *--)
+' 注意：强整体拥有部分，如果是 ["整体", "部分"]，用 *--
+
+"Habit" *-- "CheckInRecord"
+
+
+' 2.4 Aggregation (聚合关系: o--)
+' 注意：弱整体包含部分，如果是 ["整体", "部分"]，用 o--
+
+"User" o-- "Habit"
+
+
+' 2.5 Dependency (依赖关系: ..>)
+' 注意：源类依赖目标类，如果是 ["源类", "目标类"]，用 ..>
+
+"MonthlyStatistics" ..> "CheckInRecord"
+
+
+@enduml
