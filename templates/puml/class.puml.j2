@@ -13,12 +13,12 @@ class "{{ cls }}" {
 {%- if class_details is defined and cls in class_details %}
   ' 属性区 (默认设为 private: -)
   {%- for attr in class_details[cls].get("attributes", []) %}
-  - {{ attr }}
+  - {{ attr }};
   {%- endfor %}
   
   ' 方法区 (默认设为 public: +)
   {%- for method in class_details[cls].get("methods", []) %}
-  + {{ method }}
+  + {{ method }};
   {%- endfor %}
 {%- endif %}
 }

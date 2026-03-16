@@ -1,66 +1,143 @@
 {
     "classes": [
         "User",
-        "Habit",
-        "CheckInRecord",
-        "AchievementBadge",
-        "MonthlyStatistics"
+        "Book",
+        "BorrowRecord",
+        "BorrowOrder",
+        "BookCategory",
+        "LibraryLocation",
+        "OverdueFee",
+        "OperationLog",
+        "StatisticsReport",
+        "BookInventory"
     ],
     "class_details": {
         "User": {
             "attributes": [
-                "昵称",
-                "密码",
-                "用户ID"
+                "student_id",
+                "name",
+                "password",
+                "account_status"
             ],
             "methods": [
-                "创建习惯()",
-                "设置每日目标()",
-                "查看统计()"
+                "register()",
+                "login()",
+                "recoverPassword()"
             ]
         },
-        "Habit": {
+        "Book": {
             "attributes": [
-                "习惯名称",
-                "习惯描述",
-                "创建时间"
+                "title",
+                "author",
+                "isbn",
+                "category",
+                "inventory_count",
+                "location",
+                "borrow_status"
             ],
             "methods": [
-                "更新习惯()",
-                "删除习惯()"
+                "getDetails()",
+                "updateStatus()"
             ]
         },
-        "CheckInRecord": {
+        "BorrowRecord": {
             "attributes": [
-                "打卡日期",
-                "打卡时间",
-                "打卡状态"
+                "record_id",
+                "user_id",
+                "book_id",
+                "borrow_date",
+                "due_date",
+                "return_date",
+                "overdue_fee"
             ],
             "methods": [
-                "记录打卡()",
-                "查询打卡记录()"
+                "calculateOverdueFee()",
+                "updateReturnStatus()"
             ]
         },
-        "AchievementBadge": {
+        "BorrowOrder": {
             "attributes": [
-                "勋章名称",
-                "获得条件",
-                "获得日期"
+                "order_id",
+                "user_id",
+                "book_id",
+                "borrow_date",
+                "order_status"
             ],
             "methods": [
-                "授予勋章()",
-                "显示勋章()"
+                "generateOrder()",
+                "validateBorrowRights()"
             ]
         },
-        "MonthlyStatistics": {
+        "BookCategory": {
             "attributes": [
-                "月份",
-                "打卡天数",
-                "连续打卡天数"
+                "category_id",
+                "category_name",
+                "description"
             ],
             "methods": [
-                "生成统计()",
-                "显示统计()"
+                "getBooksInCategory()",
+                "addCategory()"
+            ]
+        },
+        "LibraryLocation": {
+            "attributes": [
+                "location_id",
+                "location_name",
+                "description"
+            ],
+            "methods": [
+                "getLocationDetails()",
+                "updateLocation()"
+            ]
+        },
+        "OverdueFee": {
+            "attributes": [
+                "fee_id",
+                "borrow_record_id",
+                "amount",
+                "status"
+            ],
+            "methods": [
+                "calculateFee()",
+                "markAsPaid()"
+            ]
+        },
+        "OperationLog": {
+            "attributes": [
+                "log_id",
+                "operation_type",
+                "timestamp",
+                "user_id",
+                "details"
+            ],
+            "methods": [
+                "logOperation()",
+                "getLogs()"
+            ]
+        },
+        "StatisticsReport": {
+            "attributes": [
+                "report_id",
+                "period",
+                "data",
+                "generation_date"
+            ],
+            "methods": [
+                "generateReport()",
+                "exportReport()"
+            ]
+        },
+        "BookInventory": {
+            "attributes": [
+                "inventory_id",
+                "book_id",
+                "total_count",
+                "available_count",
+                "location"
+            ],
+            "methods": [
+                "updateInventory()",
+                "checkAvailability()"
             ]
         }
     },
@@ -68,34 +145,70 @@
         "association": [
             [
                 "User",
-                "Habit"
+                "BorrowRecord"
             ],
             [
                 "User",
-                "AchievementBadge"
+                "BorrowOrder"
             ],
             [
-                "Habit",
-                "CheckInRecord"
+                "Book",
+                "BorrowRecord"
+            ],
+            [
+                "Book",
+                "BookCategory"
+            ],
+            [
+                "Book",
+                "LibraryLocation"
+            ],
+            [
+                "Book",
+                "BookInventory"
+            ],
+            [
+                "BorrowRecord",
+                "OverdueFee"
+            ],
+            [
+                "BorrowOrder",
+                "BorrowRecord"
+            ],
+            [
+                "StatisticsReport",
+                "BorrowRecord"
+            ],
+            [
+                "StatisticsReport",
+                "Book"
             ]
         ],
         "generalization": [],
         "composition": [
             [
-                "Habit",
-                "CheckInRecord"
+                "BorrowOrder",
+                "BorrowRecord"
             ]
         ],
         "aggregation": [
             [
-                "User",
-                "Habit"
+                "Book",
+                "BookInventory"
             ]
         ],
         "dependency": [
             [
-                "MonthlyStatistics",
-                "CheckInRecord"
+                "OperationLog",
+                "User"
+            ],
+            [
+                "OperationLog",
+                "Book"
+            ],
+            [
+                "StatisticsReport",
+                "BookInventory"
             ]
         ]
     }

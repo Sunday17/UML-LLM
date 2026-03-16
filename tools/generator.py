@@ -16,18 +16,38 @@ def _to_dict(pair_list):
 
 def render_plantuml_to_image(puml_code: str, img_path: str):
     """调用 PlantUML Server 将 puml 文本直接渲染为 png 图片"""
+    server_urls = [
+        # Prefer HTTPS + explicit PNG endpoint
+        "https://www.plantuml.com/plantuml/png/",
+        # Fallbacks (some mirrors/installs accept these)
+        "http://www.plantuml.com/plantuml/png/",
+        "https://www.plantuml.com/plantuml/img/",
+        "http://www.plantuml.com/plantuml/img/",
+    ]
+
+    last_err = None
+    for url in server_urls:
+        try:
+            server = PlantUML(url=url)
+            print(f"⏳ 正在请求渲染图片: {os.path.basename(img_path)} ...")
+            img_bytes = server.processes(puml_code)
+
+            with open(img_path, "wb") as f:
+                f.write(img_bytes)
+
+            print(f"✅ 图片渲染成功: {img_path}")
+            return
+        except Exception as e:
+            last_err = e
+
+    # Avoid relying on exception __str__ implementations that may be buggy
+    err_text = None
     try:
-        server = PlantUML(url='http://www.plantuml.com/plantuml/img/')
-        print(f"⏳ 正在请求渲染图片: {os.path.basename(img_path)} ...")
-        
-        img_bytes = server.processes(puml_code)
-        
-        with open(img_path, "wb") as f:
-            f.write(img_bytes)
-            
-        print(f"✅ 图片渲染成功: {img_path}")
-    except Exception as e:
-        print(f"❌ 图片渲染失败 ({os.path.basename(img_path)}): {e}")
+        err_text = str(last_err)
+    except Exception:
+        err_text = repr(last_err)
+
+    print(f"❌ 图片渲染失败 ({os.path.basename(img_path)}): {err_text}")
 
 
 def _render_and_save(target: str, data_context: dict, output_dir: str, file_name_prefix: str):

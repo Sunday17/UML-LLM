@@ -11,58 +11,130 @@ skinparam ranksep 50
 
 class "User" {
   ' 属性区 (默认设为 private: -)
-  - 昵称
-  - 密码
-  - 用户ID
+  - student_id;
+  - name;
+  - password;
+  - account_status;
   
   ' 方法区 (默认设为 public: +)
-  + 创建习惯()
-  + 设置每日目标()
-  + 查看统计()
+  + register();
+  + login();
+  + recoverPassword();
 }
 
-class "Habit" {
+class "Book" {
   ' 属性区 (默认设为 private: -)
-  - 习惯名称
-  - 习惯描述
-  - 创建时间
+  - title;
+  - author;
+  - isbn;
+  - category;
+  - inventory_count;
+  - location;
+  - borrow_status;
   
   ' 方法区 (默认设为 public: +)
-  + 更新习惯()
-  + 删除习惯()
+  + getDetails();
+  + updateStatus();
 }
 
-class "CheckInRecord" {
+class "BorrowRecord" {
   ' 属性区 (默认设为 private: -)
-  - 打卡日期
-  - 打卡时间
-  - 打卡状态
+  - record_id;
+  - user_id;
+  - book_id;
+  - borrow_date;
+  - due_date;
+  - return_date;
+  - overdue_fee;
   
   ' 方法区 (默认设为 public: +)
-  + 记录打卡()
-  + 查询打卡记录()
+  + calculateOverdueFee();
+  + updateReturnStatus();
 }
 
-class "AchievementBadge" {
+class "BorrowOrder" {
   ' 属性区 (默认设为 private: -)
-  - 勋章名称
-  - 获得条件
-  - 获得日期
+  - order_id;
+  - user_id;
+  - book_id;
+  - borrow_date;
+  - order_status;
   
   ' 方法区 (默认设为 public: +)
-  + 授予勋章()
-  + 显示勋章()
+  + generateOrder();
+  + validateBorrowRights();
 }
 
-class "MonthlyStatistics" {
+class "BookCategory" {
   ' 属性区 (默认设为 private: -)
-  - 月份
-  - 打卡天数
-  - 连续打卡天数
+  - category_id;
+  - category_name;
+  - description;
   
   ' 方法区 (默认设为 public: +)
-  + 生成统计()
-  + 显示统计()
+  + getBooksInCategory();
+  + addCategory();
+}
+
+class "LibraryLocation" {
+  ' 属性区 (默认设为 private: -)
+  - location_id;
+  - location_name;
+  - description;
+  
+  ' 方法区 (默认设为 public: +)
+  + getLocationDetails();
+  + updateLocation();
+}
+
+class "OverdueFee" {
+  ' 属性区 (默认设为 private: -)
+  - fee_id;
+  - borrow_record_id;
+  - amount;
+  - status;
+  
+  ' 方法区 (默认设为 public: +)
+  + calculateFee();
+  + markAsPaid();
+}
+
+class "OperationLog" {
+  ' 属性区 (默认设为 private: -)
+  - log_id;
+  - operation_type;
+  - timestamp;
+  - user_id;
+  - details;
+  
+  ' 方法区 (默认设为 public: +)
+  + logOperation();
+  + getLogs();
+}
+
+class "StatisticsReport" {
+  ' 属性区 (默认设为 private: -)
+  - report_id;
+  - period;
+  - data;
+  - generation_date;
+  
+  ' 方法区 (默认设为 public: +)
+  + generateReport();
+  + exportReport();
+}
+
+class "BookInventory" {
+  ' 属性区 (默认设为 private: -)
+  - inventory_id;
+  - book_id;
+  - total_count;
+  - available_count;
+  - location;
+  
+  ' 方法区 (默认设为 public: +)
+  + updateInventory();
+  + checkAvailability();
 }
 
 
@@ -73,11 +145,25 @@ class "MonthlyStatistics" {
 
 ' 2.1 Association (关联关系: --)
 
-"User" -- "Habit"
+"User" -- "BorrowRecord"
 
-"User" -- "AchievementBadge"
+"User" -- "BorrowOrder"
 
-"Habit" -- "CheckInRecord"
+"Book" -- "BorrowRecord"
+
+"Book" -- "BookCategory"
+
+"Book" -- "LibraryLocation"
+
+"Book" -- "BookInventory"
+
+"BorrowRecord" -- "OverdueFee"
+
+"BorrowOrder" -- "BorrowRecord"
+
+"StatisticsReport" -- "BorrowRecord"
+
+"StatisticsReport" -- "Book"
 
 
 ' 2.2 Generalization (泛化/继承关系: --|>)
@@ -87,19 +173,23 @@ class "MonthlyStatistics" {
 ' 2.3 Composition (组合关系: *--)
 ' 注意：强整体拥有部分，如果是 ["整体", "部分"]，用 *--
 
-"Habit" *-- "CheckInRecord"
+"BorrowOrder" *-- "BorrowRecord"
 
 
 ' 2.4 Aggregation (聚合关系: o--)
 ' 注意：弱整体包含部分，如果是 ["整体", "部分"]，用 o--
 
-"User" o-- "Habit"
+"Book" o-- "BookInventory"
 
 
 ' 2.5 Dependency (依赖关系: ..>)
 ' 注意：源类依赖目标类，如果是 ["源类", "目标类"]，用 ..>
 
-"MonthlyStatistics" ..> "CheckInRecord"
+"OperationLog" ..> "User"
+
+"OperationLog" ..> "Book"
+
+"StatisticsReport" ..> "BookInventory"
 
 
 @enduml
