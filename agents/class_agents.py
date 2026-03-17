@@ -2,6 +2,7 @@ import json
 from graph.state import UMLState
 from utils.llm import openai_chat_completion, openai_reasoning_completion
 from prompts.templates import get_template
+from tools.extract_json_from_response import parse_json_from_response
 
 def extract_classes_node(state: UMLState) -> dict:
     """Agent 3: 负责从需求中提取实体类"""
@@ -12,10 +13,10 @@ def extract_classes_node(state: UMLState) -> dict:
     prompt_tpl = get_template("cd_entity_prompt", fallback)
     prompt = prompt_tpl.format(input_text=input_text)
     
-    res = openai_chat_completion("你是一个UML专家", [{"role": "user", "content": prompt}])
-    #res = openai_reasoning_completion(prompt)
+    #res = openai_chat_completion("你是一个UML专家", [{"role": "user", "content": prompt}])
+    res = openai_reasoning_completion(prompt)
     try:
-        data = json.loads(res)
+        data = parse_json_from_response(res)
         classes = data.get("classes", [])
         print(f"✅ 提取实体类成功: {classes}")
         return {"classes": classes}
@@ -38,7 +39,7 @@ def extract_class_details_node(state: UMLState) -> dict:
     res = openai_reasoning_completion(prompt)
     #print(res)
     try:
-        data = json.loads(res)
+        data = parse_json_from_response(res)
         details = data.get("class_details", {})
         #print(details)
         print(f"✅ 属性与方法提取成功: 已解析 {len(details)} 个类")
@@ -58,9 +59,10 @@ def extract_class_rels_node(state: UMLState) -> dict:
     prompt_tpl = get_template("cd_rel_prompt", "提取类关系：{\"association\":[], \"generalization\":[], \"composition\":[], \"aggregation\":[], \"dependency\":[]}")
     prompt = prompt_tpl.format(input_text=state["input_text"], classes=classes)
     
-    res = openai_chat_completion("你是一个UML专家", [{"role": "user", "content": prompt}])
+    #res = openai_chat_completion("你是一个UML专家", [{"role": "user", "content": prompt}])
+    res = openai_reasoning_completion(prompt)
     try:
-        data = json.loads(res)
+        data = parse_json_from_response(res)
         print("✅ 类间逻辑关系解析成功")
         return {"class_relationships": data}
     except Exception as e:

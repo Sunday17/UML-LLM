@@ -1,0 +1,46 @@
+@startuml
+title 时序图：授权服务
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP登录界面"
+control "授权服务"
+database "用户数据库"
+participant "微信授权服务"
+participant "Apple ID授权服务"
+participant "短信验证码服务"
+"用户" -> "APP登录界面" : 点击微信登录按钮
+"APP登录界面" -> "授权服务" : 发送第三方授权请求（微信）
+"授权服务" -> "微信授权服务" : 发起微信OAuth授权请求
+"微信授权服务" --> "授权服务" : 返回授权码和用户标识
+"授权服务" -> "用户数据库" : 根据微信ID查询用户信息
+"用户数据库" --> "授权服务" : 返回用户查询结果（空，表示新用户）
+"授权服务" -> "用户数据库" : 创建新用户记录并关联微信ID
+"用户数据库" --> "授权服务" : 返回用户创建成功
+"授权服务" --> "APP登录界面" : 返回登录成功结果及首次登录标志
+"APP登录界面" --> "用户" : 展示登录成功并根据首次登录标志跳转
+@enduml

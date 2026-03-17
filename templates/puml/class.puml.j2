@@ -4,7 +4,8 @@ skinparam classAttributeIconSize 0
 skinparam linetype ortho
 skinparam nodesep 50
 skinparam ranksep 50
-{% for cls in classes %}
+
+{%- for cls in classes %}
 class "{{ cls }}" {
 {%- if class_details is defined and cls in class_details %}
   ' 属性区 (默认设为 private: -)
@@ -17,21 +18,22 @@ class "{{ cls }}" {
   {%- endfor %}
 {%- endif %}
 }
-{% endfor %}
+{%- endfor %}
+
 ' 2.1 Association (关联关系: --)
-{% for rel in class_relationships.get("association", []) %}
+{%- for rel in class_relationships.get("association", []) %}
 "{{ rel[0] }}" -- "{{ rel[1] }}"
-{% endfor %}
-{% for rel in class_relationships.get("generalization", []) %}
+{%- endfor %}
+{%- for rel in class_relationships.get("generalization", []) %}
 "{{ rel[0] }}" --|> "{{ rel[1] }}"
-{% endfor %}
-{% for rel in class_relationships.get("composition", []) %}
+{%- endfor %}
+{%- for rel in class_relationships.get("composition", []) %}
 "{{ rel[0] }}" *-- "{{ rel[1] }}"
-{% endfor %}
-{% for rel in class_relationships.get("aggregation", []) %}
+{%- endfor %}
+{%- for rel in class_relationships.get("aggregation", []) %}
 "{{ rel[0] }}" o-- "{{ rel[1] }}"
-{% endfor %}
-{% for rel in class_relationships.get("dependency", []) %}
+{%- endfor %}
+{%- for rel in class_relationships.get("dependency", []) %}
 "{{ rel[0] }}" ..> "{{ rel[1] }}"
-{% endfor %}
+{%- endfor %}
 @enduml

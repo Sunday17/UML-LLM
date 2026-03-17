@@ -1,0 +1,59 @@
+@startuml
+title 时序图：管理生词本与熟词本
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "单词学习APP前端"
+control "词书管理服务"
+control "学习数据服务"
+database "用户数据数据库"
+database "词书内容数据库"
+"用户" -> "单词学习APP前端" : 点击生词本菜单项
+"单词学习APP前端" -> "词书管理服务" : 发送获取生词本列表请求
+"词书管理服务" -> "用户数据数据库" : 查询用户生词本记录
+"用户数据数据库" --> "词书管理服务" : 返回生词本记录列表
+"词书管理服务" --> "单词学习APP前端" : 返回生词本数据
+"单词学习APP前端" --> "用户" : 展示生词本列表界面
+"用户" -> "单词学习APP前端" : 在学习页面点击加入生词本按钮
+"单词学习APP前端" -> "词书管理服务" : 发送添加单词到生词本请求
+"词书管理服务" -> "词书内容数据库" : 查询单词详情
+"词书内容数据库" --> "词书管理服务" : 返回单词详情
+"词书管理服务" -> "用户数据数据库" : 插入生词本记录
+"用户数据数据库" --> "词书管理服务" : 返回插入成功确认
+"词书管理服务" --> "单词学习APP前端" : 返回生词添加成功状态
+"单词学习APP前端" --> "用户" : 展示添加成功提示
+"用户" -> "单词学习APP前端" : 在学习页面点击标记熟词按钮
+"单词学习APP前端" -> "词书管理服务" : 发送标记单词为熟词请求
+"词书管理服务" -> "用户数据数据库" : 更新单词为熟词标记
+"用户数据数据库" --> "词书管理服务" : 返回标记成功确认
+"词书管理服务" -> "学习数据服务" : 通知单词标记为熟词
+"学习数据服务" -> "用户数据数据库" : 调整学习计划排除熟词
+"用户数据数据库" --> "学习数据服务" : 返回学习计划更新确认
+"学习数据服务" --> "词书管理服务" : 返回熟词处理确认
+"词书管理服务" --> "单词学习APP前端" : 返回熟词标记成功状态
+"单词学习APP前端" --> "用户" : 展示标记成功提示
+@enduml

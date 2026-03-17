@@ -1,0 +1,54 @@
+@startuml
+title 时序图：参与组队打卡
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP客户端"
+control "组队打卡服务"
+control "学习数据服务"
+database "用户数据库"
+database "学习记录数据库"
+participant "推送通知服务"
+"用户" -> "APP客户端" : 输入邀请码并点击加入组队打卡小队
+"APP客户端" -> "组队打卡服务" : 发送加入小队请求，包含邀请码和用户ID
+"组队打卡服务" -> "用户数据库" : 查询用户信息以验证身份
+"用户数据库" --> "组队打卡服务" : 返回用户信息
+"组队打卡服务" -> "学习数据服务" : 请求用户学习记录用于小队关联
+"学习数据服务" -> "学习记录数据库" : 查询用户学习记录
+"学习记录数据库" --> "学习数据服务" : 返回用户学习记录
+"学习数据服务" --> "组队打卡服务" : 返回学习记录数据
+"组队打卡服务" -> "用户数据库" : 更新用户的小队关联信息
+"用户数据库" --> "组队打卡服务" : 返回更新成功状态
+"组队打卡服务" -> "学习数据服务" : 通知更新小队打卡记录
+"学习数据服务" -> "学习记录数据库" : 更新用户的小队打卡关联
+"学习记录数据库" --> "学习数据服务" : 返回更新结果
+"学习数据服务" --> "组队打卡服务" : 返回小队打卡记录更新成功
+"组队打卡服务" --> "APP客户端" : 返回加入成功状态和小队详情
+"APP客户端" --> "用户" : 展示加入成功界面和小队信息
+"组队打卡服务" -> "推送通知服务" : 发送小队加入成功通知请求
+"推送通知服务" -> "用户" : 发送推送通知，欢迎加入小队
+@enduml

@@ -29,7 +29,7 @@ def openai_chat_completion(system_prompt: str, history: list, temperature=0, max
         return "{}"
 
 
-def openai_reasoning_completion(prompt: str, max_tokens=8000) -> str:
+def openai_reasoning_completion(prompt: str, max_tokens=10000) -> str:
     """专为推理大模型（如 deepseek-reasoner）设计的调用接口"""
     start_time = time.time()
     client = OpenAI(api_key=OPENAI_API_KEY, base_url=BASE_URL)

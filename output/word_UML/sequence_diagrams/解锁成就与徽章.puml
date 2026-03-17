@@ -1,0 +1,54 @@
+@startuml
+title 时序图：解锁成就与徽章
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP客户端"
+control "成就徽章服务"
+control "用户学习档案服务"
+control "学习数据统计服务"
+database "用户数据库"
+database "学习记录数据库"
+database "成就徽章数据库"
+"用户" -> "APP客户端" : 提交当日学习打卡完成请求
+"APP客户端" -> "学习数据统计服务" : 发送用户打卡数据更新请求
+"学习数据统计服务" -> "学习记录数据库" : 更新用户学习记录数据
+"学习记录数据库" --> "学习数据统计服务" : 返回更新成功确认
+"学习数据统计服务" -> "成就徽章服务" : 触发成就条件检查事件
+"成就徽章服务" -> "学习记录数据库" : 查询用户连续打卡天数等成就条件数据
+"学习记录数据库" --> "成就徽章服务" : 返回用户学习记录数据
+"成就徽章服务" -> "成就徽章数据库" : 查询成就解锁条件及用户当前状态
+"成就徽章数据库" --> "成就徽章服务" : 返回成就条件数据
+"成就徽章服务" -> "成就徽章数据库" : 更新用户成就状态为已解锁
+"成就徽章数据库" --> "成就徽章服务" : 返回更新成功确认
+"成就徽章服务" -> "用户学习档案服务" : 发送成就解锁信息以更新用户档案
+"用户学习档案服务" -> "用户数据库" : 更新用户成就徽章列表
+"用户数据库" --> "用户学习档案服务" : 返回更新成功确认
+"用户学习档案服务" --> "成就徽章服务" : 返回用户档案更新成功结果
+"成就徽章服务" -> "APP客户端" : 推送成就解锁通知
+"APP客户端" --> "用户" : 展示成就解锁弹窗与徽章详情
+@enduml

@@ -14,36 +14,35 @@ skinparam actor {
     BackgroundColor #FAFAFA
     BorderColor #333333
 }
-
-{% for actor in actors %}
+{%- for actor in actors %}
 actor "{{ actor }}"
-{% endfor %}
-{% for uc in usecases %}
+{%- endfor %}
+{%- for uc in usecases %}
 usecase "{{ uc }}"
-{% endfor %}
-{% for actor, ucs in relationships.association.items() %}
-{% for uc in ucs %}
+{%- endfor %}
+{%- for actor, ucs in relationships.association.items() %}
+{%- for uc in ucs %}
 "{{ actor }}" -- "{{ uc }}"
-{% endfor %}
-{% endfor %}
-{% for base, targets in relationships.inclusion.items() %}
-{% for target in targets %}
+{%- endfor %}
+{%- endfor %}
+{%- for base, targets in relationships.inclusion.items() %}
+{%- for target in targets %}
 "{{ base }}" ..> "{{ target }}" : <<include>>
-{% endfor %}
-{% endfor %}
-{% for base, extensions in relationships.extension.items() %}
-{% for ext in extensions %}
+{%- endfor %}
+{%- endfor %}
+{%- for base, extensions in relationships.extension.items() %}
+{%- for ext in extensions %}
 "{{ base }}" <.. "{{ ext }}" : <<extend>>
-{% endfor %}
-{% endfor %}
-{% for parent, children in relationships.uc_gen.items() %}
-{% for child in children %}
+{%- endfor %}
+{%- endfor %}
+{%- for parent, children in relationships.uc_gen.items() %}
+{%- for child in children %}
 "{{ parent }}" <|-- "{{ child }}"
-{% endfor %}
-{% endfor %}
-{% for parent, children in relationships.act_gen.items() %}
-{% for child in children %}
+{%- endfor %}
+{%- endfor %}
+{%- for parent, children in relationships.act_gen.items() %}
+{%- for child in children %}
 "{{ parent }}" <|-- "{{ child }}"
-{% endfor %}
-{% endfor %}
+{%- endfor %}
+{%- endfor %}
 @enduml

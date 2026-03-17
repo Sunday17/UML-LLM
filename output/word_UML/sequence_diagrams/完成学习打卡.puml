@@ -1,0 +1,61 @@
+@startuml
+title 时序图：完成学习打卡
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP学习页面"
+control "学习打卡服务"
+control "学习计划服务"
+control "成就与徽章服务"
+database "用户学习数据库"
+database "成就徽章数据库"
+participant "社交分享平台"
+"用户" -> "APP学习页面" : 点击学习页面上的‘完成学习并打卡’按钮
+"APP学习页面" -> "学习打卡服务" : 发起完成学习打卡请求，并携带用户标识和日期
+"学习打卡服务" -> "学习计划服务" : 请求验证用户当日新学与复习任务是否全部完成
+"学习计划服务" -> "用户学习数据库" : 查询用户当日任务完成状态数据
+"用户学习数据库" --> "学习计划服务" : 返回用户当日任务完成状态
+"学习计划服务" --> "学习打卡服务" : 返回任务完成验证结果（通过/不通过）
+"学习打卡服务" -> "用户学习数据库" : 更新用户打卡记录（连续打卡天数、累计打卡天数）
+"用户学习数据库" --> "学习打卡服务" : 返回打卡记录更新成功结果
+"学习打卡服务" -> "成就与徽章服务" : 通知打卡完成事件，请求检查并发放成就与徽章奖励
+"成就与徽章服务" -> "成就徽章数据库" : 查询用户当前打卡数据及成就触发条件
+"成就徽章数据库" --> "成就与徽章服务" : 返回用户数据及符合条件的成就列表
+"成就与徽章服务" -> "成就徽章数据库" : 更新用户已解锁的成就与徽章数据
+"成就徽章数据库" --> "成就与徽章服务" : 返回成就数据更新成功结果
+"成就与徽章服务" --> "学习打卡服务" : 返回本次打卡触发的成就与徽章解锁信息
+"学习打卡服务" --> "APP学习页面" : 返回打卡成功结果，包含更新后的打卡数据、成长值奖励及解锁的成就信息
+"APP学习页面" --> "用户" : 展示打卡成功界面，更新连续打卡天数显示，并提示获得的奖励
+"用户" -> "APP学习页面" : 点击打卡成功界面上的‘生成打卡海报’按钮
+"APP学习页面" -> "学习打卡服务" : 请求生成包含用户学习数据的个性化打卡海报
+"学习打卡服务" -> "用户学习数据库" : 获取用于海报生成的用户学习统计数据（如累计学习天数、背词总量）
+"用户学习数据库" --> "学习打卡服务" : 返回用户学习统计数据
+"学习打卡服务" --> "APP学习页面" : 返回生成的打卡海报图片数据
+"APP学习页面" --> "用户" : 展示包含海报预览的分享界面
+"用户" -> "APP学习页面" : 点击分享界面的‘分享到社交平台’按钮
+"APP学习页面" -> "社交分享平台" : 调用系统分享接口，发送打卡海报图片
+@enduml

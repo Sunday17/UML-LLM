@@ -1,0 +1,59 @@
+@startuml
+title 时序图：管理错题本
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "单词学习APP前端"
+control "错题本管理服务"
+control "学习数据服务"
+control "词书管理服务"
+database "用户数据数据库"
+database "学习记录数据库"
+database "词书内容数据库"
+"用户" -> "单词学习APP前端" : 点击错题本入口
+"单词学习APP前端" -> "错题本管理服务" : 发送获取错题本列表请求
+"错题本管理服务" -> "学习记录数据库" : 查询用户错题记录
+"学习记录数据库" --> "错题本管理服务" : 返回错题记录列表
+"错题本管理服务" --> "单词学习APP前端" : 返回错题本数据
+"单词学习APP前端" --> "用户" : 渲染错题本页面
+"用户" -> "单词学习APP前端" : 选择按词书筛选并确认
+"单词学习APP前端" -> "错题本管理服务" : 发送筛选条件（词书ID）
+"错题本管理服务" -> "学习记录数据库" : 查询指定词书的错题记录
+"学习记录数据库" --> "错题本管理服务" : 返回筛选后的错题记录
+"错题本管理服务" --> "单词学习APP前端" : 返回筛选结果
+"单词学习APP前端" --> "用户" : 更新显示筛选后的错题列表
+"用户" -> "单词学习APP前端" : 勾选错题并点击标记掌握按钮
+"单词学习APP前端" -> "错题本管理服务" : 发送批量标记掌握请求
+"错题本管理服务" -> "学习记录数据库" : 更新错题状态为已掌握
+"学习记录数据库" --> "错题本管理服务" : 返回更新成功结果
+"错题本管理服务" -> "学习数据服务" : 通知错题状态更新以调整复习计划
+"学习数据服务" -> "用户数据数据库" : 更新用户学习档案中的复习计划
+"用户数据数据库" --> "学习数据服务" : 返回更新成功
+"学习数据服务" --> "错题本管理服务" : 返回复习计划调整完成
+"错题本管理服务" --> "单词学习APP前端" : 返回标记掌握成功状态
+"单词学习APP前端" --> "用户" : 显示标记掌握成功提示
+@enduml

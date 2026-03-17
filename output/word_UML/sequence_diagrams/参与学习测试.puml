@@ -1,0 +1,65 @@
+@startuml
+title 时序图：参与学习测试
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP前端界面"
+control "测试服务"
+control "学习计划服务"
+control "词书服务"
+control "用户学习数据服务"
+control "错题本服务"
+database "用户数据库"
+database "词书数据库"
+database "学习记录数据库"
+database "错题数据库"
+"用户" -> "APP前端界面" : 点击学习测试入口并选择测试类型（如：单元测试）
+"APP前端界面" -> "测试服务" : 发起单元测试请求，携带用户ID、测试类型、目标词书ID及单元信息
+"测试服务" -> "词书服务" : 请求根据单元信息获取对应单词列表
+"词书服务" -> "词书数据库" : 查询指定单元下的单词及释义等信息
+"词书数据库" --> "词书服务" : 返回单元单词列表及内容
+"词书服务" --> "测试服务" : 返回用于生成测试题目的单词数据
+"测试服务" --> "APP前端界面" : 返回组卷完成的第一道测试题目（如：选词填空）
+"用户" -> "APP前端界面" : 回答第一道题目并提交答案
+"APP前端界面" -> "测试服务" : 提交题目答案并请求校验
+"测试服务" -> "词书数据库" : 查询该单词的标准答案信息
+"词书数据库" --> "测试服务" : 返回单词标准答案
+"测试服务" --> "APP前端界面" : 返回本题校验结果（正确/错误）及正确答案解析
+"测试服务" -> "错题本服务" : 若答题错误，发送错题记录（用户ID、单词ID、错误类型）
+"错题本服务" -> "错题数据库" : 插入或更新错题记录
+"APP前端界面" -> "测试服务" : 请求下一道测试题目
+"测试服务" --> "APP前端界面" : 返回下一道题目（流程循环至所有题目答完）
+"用户" -> "APP前端界面" : 完成最后一道题目并提交
+"测试服务" -> "用户学习数据服务" : 请求记录本次测试整体结果（正确率、测试时长等）
+"用户学习数据服务" -> "学习记录数据库" : 插入本次测试记录
+"测试服务" -> "错题本服务" : 请求获取本次测试的错误单词清单用于报告
+"错题本服务" -> "错题数据库" : 查询本次测试会话中产生的错题
+"错题数据库" --> "错题本服务" : 返回错误单词清单
+"错题本服务" --> "测试服务" : 返回错误单词清单数据
+"测试服务" --> "APP前端界面" : 返回完整的测试报告（正确率、错误清单、薄弱点分析）
+"APP前端界面" --> "用户" : 展示测试结果报告页面
+@enduml

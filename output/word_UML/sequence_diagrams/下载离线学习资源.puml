@@ -1,0 +1,48 @@
+@startuml
+title 时序图：下载离线学习资源
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "单词学习APP客户端"
+control "离线资源管理服务"
+database "词书内容数据库"
+database "发音资源存储系统"
+database "用户学习数据数据库"
+control "网络状态检测模块"
+"用户" -> "单词学习APP客户端" : 点击下载离线资源按钮
+"单词学习APP客户端" -> "网络状态检测模块" : 请求检查当前网络状态
+"网络状态检测模块" --> "单词学习APP客户端" : 返回网络类型检测结果
+"单词学习APP客户端" -> "离线资源管理服务" : 发送离线资源下载请求（含词书ID和用户ID）
+"离线资源管理服务" -> "词书内容数据库" : 查询指定词书的单词释义和例句内容
+"词书内容数据库" --> "离线资源管理服务" : 返回词书内容数据
+"离线资源管理服务" -> "发音资源存储系统" : 查询指定单词的发音文件
+"发音资源存储系统" --> "离线资源管理服务" : 返回发音文件数据
+"离线资源管理服务" -> "用户学习数据数据库" : 更新用户离线词书下载状态
+"用户学习数据数据库" --> "离线资源管理服务" : 返回更新成功确认
+"离线资源管理服务" --> "单词学习APP客户端" : 返回离线资源包（含内容和发音）
+"单词学习APP客户端" --> "用户" : 显示下载成功提示并保存资源到本地
+@enduml

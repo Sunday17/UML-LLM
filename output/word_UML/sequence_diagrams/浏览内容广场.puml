@@ -1,0 +1,55 @@
+@startuml
+title 时序图：浏览内容广场
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP前端页面"
+control "社区内容服务"
+control "内容推荐算法模块"
+database "用户数据库"
+database "社区内容数据库"
+participant "内容审核系统"
+"用户" -> "APP前端页面" : 点击‘社区’Tab进入社区模块
+"用户" -> "APP前端页面" : 在社区模块点击进入‘内容广场’
+"APP前端页面" -> "社区内容服务" : 发起内容广场列表请求
+"社区内容服务" -> "用户数据库" : 查询当前用户画像与偏好（用于个性化推荐）
+"用户数据库" --> "社区内容服务" : 返回用户基础信息与学习标签
+"社区内容服务" -> "内容推荐算法模块" : 请求基于用户画像的个性化内容推荐策略
+"内容推荐算法模块" --> "社区内容服务" : 返回内容排序与筛选规则
+"社区内容服务" -> "社区内容数据库" : 根据推荐策略查询优质学习动态、心得笔记等内容
+"社区内容数据库" --> "社区内容服务" : 返回内容列表数据（含发布者、文本、图片、点赞数、评论数等）
+"社区内容服务" -> "内容审核系统" : 验证返回内容列表的审核状态，过滤未通过内容
+"内容审核系统" --> "社区内容服务" : 返回审核状态验证结果
+"社区内容服务" --> "APP前端页面" : 返回经过审核与排序的内容广场列表
+"APP前端页面" --> "用户" : 渲染并展示内容广场列表
+"用户" -> "APP前端页面" : 浏览内容列表，点击某条内容的‘点赞’按钮
+"APP前端页面" -> "社区内容服务" : 发送用户点赞行为请求
+"社区内容服务" -> "社区内容数据库" : 更新对应内容的点赞数并记录用户点赞关系
+"社区内容数据库" --> "社区内容服务" : 返回点赞操作成功结果
+"社区内容服务" --> "APP前端页面" : 返回点赞成功回调
+"APP前端页面" --> "用户" : 更新UI，显示点赞成功状态（如按钮变色、数量+1）
+@enduml

@@ -1,0 +1,407 @@
+{
+    "classes": [
+        "Achievement",
+        "CheckIn",
+        "CommunityPost",
+        "CustomVocabularyBook",
+        "LearningPlan",
+        "LearningSession",
+        "MistakeBook",
+        "ReviewTask",
+        "StudyGroup",
+        "Test",
+        "TestResult",
+        "User",
+        "UserWordCollection",
+        "UserWordRecord",
+        "VocabularyBook",
+        "Word"
+    ],
+    "class_details": {
+        "Achievement": {
+            "attributes": [
+                "徽章名称",
+                "徽章描述",
+                "解锁条件",
+                "解锁时间",
+                "稀有度",
+                "奖励内容",
+                "徽章分类",
+                "图标"
+            ],
+            "methods": [
+                "解锁()",
+                "展示()"
+            ]
+        },
+        "CheckIn": {
+            "attributes": [
+                "打卡日期",
+                "连续打卡天数",
+                "累计打卡天数",
+                "打卡状态",
+                "用户ID",
+                "奖励成长值",
+                "奖励徽章碎片",
+                "打卡海报"
+            ],
+            "methods": [
+                "打卡()",
+                "生成打卡海报()",
+                "分享()"
+            ]
+        },
+        "CommunityPost": {
+            "attributes": [
+                "发布内容",
+                "发布时间",
+                "发布者ID",
+                "话题标签",
+                "配图列表",
+                "点赞数",
+                "评论数",
+                "收藏数",
+                "转发数",
+                "审核状态"
+            ],
+            "methods": [
+                "发布()",
+                "点赞()",
+                "评论()",
+                "收藏()",
+                "转发()",
+                "审核()"
+            ]
+        },
+        "CustomVocabularyBook": {
+            "attributes": [
+                "词书名称",
+                "封面",
+                "创建者ID",
+                "创建时间",
+                "单词列表",
+                "单词释义",
+                "单词例句",
+                "个人备注",
+                "单词数量上限",
+                "创建方式"
+            ],
+            "methods": [
+                "创建()",
+                "编辑()",
+                "导入单词()",
+                "设置为学习词书()"
+            ]
+        },
+        "LearningPlan": {
+            "attributes": [
+                "目标词书",
+                "考试时间",
+                "每日新学单词量",
+                "每日复习单词量",
+                "生成日期",
+                "计划状态",
+                "用户ID",
+                "补卡次数"
+            ],
+            "methods": [
+                "生成计划()",
+                "调整计划()",
+                "重新计算计划()"
+            ]
+        },
+        "LearningSession": {
+            "attributes": [
+                "学习时间",
+                "学习单词列表",
+                "学习模式",
+                "学习进度",
+                "用户ID",
+                "本次学习数据",
+                "掌握度选择记录"
+            ],
+            "methods": [
+                "开始学习()",
+                "结束学习()",
+                "切换模式()",
+                "记录学习数据()"
+            ]
+        },
+        "MistakeBook": {
+            "attributes": [
+                "错题列表",
+                "错误次数",
+                "错误类型",
+                "错误时间",
+                "用户ID",
+                "高频错题标记"
+            ],
+            "methods": [
+                "添加错题()",
+                "移除错题()",
+                "标记掌握()",
+                "加入复习计划()",
+                "导出()"
+            ]
+        },
+        "ReviewTask": {
+            "attributes": [
+                "单词ID",
+                "复习时间",
+                "单词掌握等级",
+                "上次学习时间",
+                "用户ID",
+                "复习模式"
+            ],
+            "methods": [
+                "生成复习任务()",
+                "完成复习()",
+                "调整掌握等级()",
+                "快速复习()"
+            ]
+        },
+        "StudyGroup": {
+            "attributes": [
+                "小组名称",
+                "创建者ID",
+                "成员列表",
+                "打卡目标",
+                "打卡周期",
+                "创建时间",
+                "小队排行榜"
+            ],
+            "methods": [
+                "创建小组()",
+                "加入小组()",
+                "打卡()",
+                "提醒未打卡成员()"
+            ]
+        },
+        "Test": {
+            "attributes": [
+                "测试类型",
+                "测试范围",
+                "测试题目列表",
+                "测试时间",
+                "用户ID",
+                "测试题型"
+            ],
+            "methods": [
+                "开始测试()",
+                "提交测试()",
+                "评分()",
+                "生成报告()"
+            ]
+        },
+        "TestResult": {
+            "attributes": [
+                "正确率",
+                "错误单词清单",
+                "薄弱点分析",
+                "测试时间",
+                "用户ID",
+                "测试ID",
+                "得分"
+            ],
+            "methods": [
+                "保存()",
+                "分享()"
+            ]
+        },
+        "User": {
+            "attributes": [
+                "用户ID",
+                "手机号",
+                "昵称",
+                "头像",
+                "学习目标",
+                "个性签名",
+                "累计学习天数",
+                "背词总量",
+                "连续打卡天数",
+                "会员状态"
+            ],
+            "methods": [
+                "注册()",
+                "登录()",
+                "修改个人信息()",
+                "查看学习档案()"
+            ]
+        },
+        "UserWordCollection": {
+            "attributes": [
+                "单词ID",
+                "用户ID",
+                "收藏类型",
+                "添加时间",
+                "所属词书",
+                "个人笔记"
+            ],
+            "methods": [
+                "添加单词()",
+                "移除单词()",
+                "批量加入复习计划()",
+                "筛选()"
+            ]
+        },
+        "UserWordRecord": {
+            "attributes": [
+                "单词ID",
+                "用户ID",
+                "掌握等级",
+                "上次学习时间",
+                "下次复习时间",
+                "学习次数",
+                "复习次数",
+                "错误次数"
+            ],
+            "methods": [
+                "更新掌握等级()",
+                "记录学习()",
+                "记录复习()",
+                "获取下一次复习时间()"
+            ]
+        },
+        "VocabularyBook": {
+            "attributes": [
+                "词书ID",
+                "词书名称",
+                "分类",
+                "词汇总量",
+                "适用人群",
+                "词书简介",
+                "大纲",
+                "用户评分",
+                "学习人数",
+                "免费/会员专属"
+            ],
+            "methods": [
+                "订阅()",
+                "取消订阅()",
+                "预览()",
+                "搜索()",
+                "排序()"
+            ]
+        },
+        "Word": {
+            "attributes": [
+                "单词拼写",
+                "音标",
+                "核心释义",
+                "词性变化",
+                "例句",
+                "常用搭配",
+                "词根词缀",
+                "同义词",
+                "反义词",
+                "考点",
+                "考频"
+            ],
+            "methods": [
+                "获取发音()",
+                "显示释义()",
+                "加入生词本()",
+                "标记熟词()"
+            ]
+        }
+    },
+    "class_relationships": {
+        "association": [
+            [
+                "User",
+                "CheckIn"
+            ],
+            [
+                "User",
+                "CommunityPost"
+            ],
+            [
+                "User",
+                "LearningPlan"
+            ],
+            [
+                "User",
+                "MistakeBook"
+            ],
+            [
+                "User",
+                "StudyGroup"
+            ],
+            [
+                "User",
+                "Test"
+            ],
+            [
+                "User",
+                "UserWordCollection"
+            ],
+            [
+                "User",
+                "Achievement"
+            ],
+            [
+                "UserWordCollection",
+                "Word"
+            ],
+            [
+                "Test",
+                "TestResult"
+            ],
+            [
+                "Test",
+                "VocabularyBook"
+            ],
+            [
+                "LearningPlan",
+                "VocabularyBook"
+            ],
+            [
+                "ReviewTask",
+                "VocabularyBook"
+            ],
+            [
+                "CustomVocabularyBook",
+                "VocabularyBook"
+            ],
+            [
+                "UserWordRecord",
+                "Word"
+            ],
+            [
+                "CommunityPost",
+                "User"
+            ],
+            [
+                "CheckIn",
+                "User"
+            ]
+        ],
+        "generalization": [
+            [
+                "CustomVocabularyBook",
+                "VocabularyBook"
+            ]
+        ],
+        "composition": [
+            [
+                "LearningSession",
+                "UserWordRecord"
+            ],
+            [
+                "MistakeBook",
+                "UserWordRecord"
+            ]
+        ],
+        "aggregation": [
+            [
+                "VocabularyBook",
+                "Word"
+            ],
+            [
+                "StudyGroup",
+                "User"
+            ]
+        ],
+        "dependency": []
+    }
+}

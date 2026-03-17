@@ -1,0 +1,57 @@
+@startuml
+title 时序图：管理个人信息与学习档案
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP前端界面"
+control "个人信息管理服务"
+control "学习档案服务"
+database "用户数据库"
+database "学习记录数据库"
+"用户" -> "APP前端界面" : 在‘我的’页面点击‘个人信息与学习档案’入口
+"APP前端界面" -> "个人信息管理服务" : 发送用户信息查询请求
+"APP前端界面" -> "学习档案服务" : 发送学习数据概览查询请求
+"个人信息管理服务" -> "用户数据库" : 查询用户基础信息（头像、昵称、学习目标、累计学习天数等）
+"学习档案服务" -> "学习记录数据库" : 查询用户核心学习统计数据（背词总量、连续打卡天数等）
+"用户数据库" --> "个人信息管理服务" : 返回用户基础信息查询结果
+"学习记录数据库" --> "学习档案服务" : 返回核心学习统计数据查询结果
+"个人信息管理服务" --> "APP前端界面" : 返回用户基础信息
+"学习档案服务" --> "APP前端界面" : 返回学习数据概览
+"APP前端界面" --> "用户" : 渲染并展示个人信息与学习档案概览页面
+"用户" -> "APP前端界面" : 在个人信息区域点击‘编辑’按钮，修改昵称为新值并确认
+"APP前端界面" -> "个人信息管理服务" : 发送用户信息更新请求（包含新昵称）
+"个人信息管理服务" -> "用户数据库" : 更新用户昵称信息
+"用户数据库" --> "个人信息管理服务" : 返回更新操作成功状态
+"个人信息管理服务" --> "APP前端界面" : 返回用户信息更新成功结果
+"APP前端界面" --> "用户" : 展示‘修改成功’提示，并更新页面显示的昵称
+"用户" -> "APP前端界面" : 在学习档案区域点击‘日视图’切换为‘周视图’
+"APP前端界面" -> "学习档案服务" : 发送按周维度的详细学习数据查询请求（如词汇量增长曲线、学习时长分布等）
+"学习档案服务" -> "学习记录数据库" : 查询用户近一周的详细学习记录
+"学习记录数据库" --> "学习档案服务" : 返回近一周详细学习记录数据
+"学习档案服务" --> "APP前端界面" : 返回处理后的周维度学习档案数据（如图表数据、统计值）
+"APP前端界面" --> "用户" : 重新渲染并展示周视图下的学习档案详情
+@enduml

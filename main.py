@@ -4,7 +4,7 @@ from graph.workflow import build_graph
 from tools.generator import generate_usecase_outputs, generate_class_outputs, generate_sequence_outputs, render_plantuml_to_image
 from tools.puml_parser import sync_puml_to_state
 
-INPUT_FILE_PATH = "datasets/library.txt"
+INPUT_FILE_PATH = "datasets/word.txt"
 
 def handle_interrupt_and_resume(app, config):
     """处理断点拦截，并负责唤醒图引擎走完后续流程"""

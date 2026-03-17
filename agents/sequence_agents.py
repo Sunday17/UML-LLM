@@ -2,12 +2,12 @@ import json
 from graph.state import UMLState
 from utils.llm import openai_reasoning_completion,openai_chat_completion
 from prompts.templates import get_template
-from tools.extract_json_from_response import extract_json_from_response
+from tools.extract_json_from_response import parse_json_from_response
 
 def extract_seq_participants_node(state: UMLState) -> dict:
     """Agent 6: 为每个用例提取参与者 (结合原始文本推演)"""
     print("\n======== [时序图-Agent 1] 正在提取各用例交互参与者 ========")
-    input_text = state.get("input_text", "")  # [新增] 获取原始需求文本
+    input_text = state.get("input_text", "")  
     usecases = state.get("usecases", [])
     actors = state.get("actors", [])
     classes = state.get("classes", [])
@@ -28,8 +28,7 @@ def extract_seq_participants_node(state: UMLState) -> dict:
             [{"role": "user", "content": prompt}],
         )
         try:
-            clean_json_str = extract_json_from_response(res)
-            data = json.loads(clean_json_str)
+            data = parse_json_from_response(res)
         except Exception as e:
             print(f"❌ 参与者 JSON 解析失败: {e}")
             data = {}
@@ -60,8 +59,7 @@ def extract_seq_messages_node(state: UMLState) -> dict:
         )
         res = openai_reasoning_completion(prompt)
         try:
-            clean_json_str = extract_json_from_response(res)
-            msg_data = json.loads(clean_json_str)
+            msg_data = parse_json_from_response(res)
         except Exception as e:
             print(f"❌ 时序消息 JSON 解析失败: {e}")
             msg_data = {}

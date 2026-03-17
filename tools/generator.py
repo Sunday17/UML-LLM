@@ -69,7 +69,7 @@ def _render_and_save(target: str, data_context: dict, output_dir: str, file_name
 
 def generate_usecase_outputs(state: dict, output_dir: str, file_name_prefix: str):
     """专用生成：用例图产物"""
-    # 【修改】动态构建专属 UML 文件夹路径
+    # 动态构建专属 UML 文件夹路径
     uml_dir = os.path.join(output_dir, f"{file_name_prefix}_UML")
     
     rels = state.get("relationships", {})
@@ -89,7 +89,7 @@ def generate_usecase_outputs(state: dict, output_dir: str, file_name_prefix: str
 
 def generate_class_outputs(state: dict, output_dir: str, file_name_prefix: str):
     """专用生成：类图产物"""
-    # 【修改】动态构建专属 UML 文件夹路径
+    # 动态构建专属 UML 文件夹路径
     uml_dir = os.path.join(output_dir, f"{file_name_prefix}_UML")
     
     data_context = {
@@ -107,7 +107,7 @@ def generate_sequence_outputs(state: dict, output_dir: str, file_name_prefix: st
         print("⚠️ 没找到时序图数据。")
         return
 
-    # 【核心修改】将时序图子文件夹放在专属 UML 文件夹内
+    # 将时序图子文件夹放在专属 UML 文件夹内
     uml_dir = os.path.join(output_dir, f"{file_name_prefix}_UML")
     seq_dir = os.path.join(uml_dir, "sequence_diagrams")
     os.makedirs(seq_dir, exist_ok=True)
@@ -123,7 +123,7 @@ def generate_sequence_outputs(state: dict, output_dir: str, file_name_prefix: st
         
         data_context = {
             "usecase_name": uc_name, # 补充用例名称，以防模板 title 使用
-            "participants": data.get("participants", []), # 修正：模板使用的是 participants
+            "participants": data.get("participants", []), 
             "interactions": data.get("interactions", [])
         }
         

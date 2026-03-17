@@ -1,0 +1,62 @@
+@startuml
+title 时序图：完成智能复习任务
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP客户端"
+control "复习服务"
+control "学习数据服务"
+database "用户学习数据库"
+database "单词内容数据库"
+database "离线缓存"
+"用户" -> "APP客户端" : 点击进入复习模块
+"APP客户端" -> "复习服务" : 请求获取当日智能复习任务列表
+"复习服务" -> "学习数据服务" : 查询用户单词掌握等级及上次学习时间数据
+"学习数据服务" -> "用户学习数据库" : 检索用户单词记忆历史记录
+"用户学习数据库" --> "学习数据服务" : 返回单词掌握等级、上次学习时间及错误次数数据
+"学习数据服务" --> "复习服务" : 返回计算后的到期复习单词ID列表
+"复习服务" -> "单词内容数据库" : 批量查询到期复习单词的详细内容
+"单词内容数据库" --> "复习服务" : 返回单词音标、释义、例句等内容
+"复习服务" --> "APP客户端" : 返回当日复习任务单词列表及内容
+"APP客户端" --> "用户" : 展示第一个复习单词及掌握度选择按钮
+"用户" -> "APP客户端" : 选择当前单词掌握度（认识/模糊/不认识）
+"APP客户端" -> "复习服务" : 提交单词复习结果及掌握度判断
+"复习服务" -> "学习数据服务" : 请求更新单词掌握等级和下次复习时间
+"学习数据服务" -> "用户学习数据库" : 更新单词掌握等级、复习时间及错误次数
+"用户学习数据库" --> "学习数据服务" : 返回数据更新成功确认
+"学习数据服务" --> "复习服务" : 返回单词记忆状态更新结果
+"复习服务" --> "APP客户端" : 返回当前单词复习处理完成状态
+"APP客户端" --> "用户" : 展示下一个复习单词并更新进度
+"用户" -> "APP客户端" : 完成所有复习任务并确认结束
+"APP客户端" -> "复习服务" : 通知当日复习任务已完成
+"复习服务" -> "学习数据服务" : 更新用户当日复习完成状态
+"学习数据服务" -> "用户学习数据库" : 记录复习完成时间及任务完成状态
+"用户学习数据库" --> "学习数据服务" : 返回状态更新确认
+"学习数据服务" --> "复习服务" : 返回复习完成状态确认
+"复习服务" --> "APP客户端" : 返回复习任务完成确认及学习数据统计
+"APP客户端" --> "用户" : 展示复习完成弹窗及打卡入口
+@enduml

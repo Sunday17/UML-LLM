@@ -1,0 +1,55 @@
+@startuml
+title 时序图：参与话题专区
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "社区前端页面"
+control "社区服务"
+control "内容审核服务"
+database "用户数据库"
+database "社区内容数据库"
+participant "第三方内容审核系统"
+"用户" -> "社区前端页面" : 点击进入社区模块并选择热门话题专区
+"社区前端页面" -> "社区服务" : 请求加载指定话题专区的帖子列表
+"社区服务" -> "社区内容数据库" : 查询指定话题下的帖子及关联用户信息
+"社区内容数据库" --> "社区服务" : 返回帖子列表及相关用户数据
+"社区服务" --> "社区前端页面" : 返回话题专区页面渲染数据
+"用户" -> "社区前端页面" : 点击发布动态按钮并填写动态内容（含话题标签）
+"社区前端页面" -> "社区服务" : 发起动态发布请求，包含用户ID、内容、话题标签
+"社区服务" -> "用户数据库" : 查询用户状态及发布权限
+"用户数据库" --> "社区服务" : 返回用户有效状态
+"社区服务" -> "社区内容数据库" : 保存动态内容为待审核状态
+"社区内容数据库" --> "社区服务" : 返回保存成功结果及动态ID
+"社区服务" -> "内容审核服务" : 发送内容审核请求，包含动态ID及内容
+"内容审核服务" -> "第三方内容审核系统" : 调用文本与图片内容安全审核接口
+"第三方内容审核系统" --> "内容审核服务" : 返回机器审核结果及建议
+"内容审核服务" --> "社区服务" : 返回动态内容的初步审核状态（如：机审通过/待人工复核）
+"社区服务" -> "社区内容数据库" : 根据审核状态更新动态的可见性状态
+"社区内容数据库" --> "社区服务" : 返回状态更新确认
+"社区服务" --> "社区前端页面" : 返回发布结果（如：发布成功，进入审核）
+"社区前端页面" --> "用户" : 展示发布成功提示
+@enduml

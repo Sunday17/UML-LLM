@@ -1,0 +1,54 @@
+@startuml
+title 时序图：发布学习动态
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP前端页面"
+control "社区内容发布服务"
+control "内容审核服务"
+database "用户数据库"
+database "社区内容数据库"
+participant "第三方内容审核系统"
+"用户" -> "APP前端页面" : 点击社区模块入口
+"APP前端页面" --> "用户" : 展示社区首页与发布按钮
+"用户" -> "APP前端页面" : 点击发布动态按钮
+"APP前端页面" --> "用户" : 弹出动态编辑页面
+"用户" -> "APP前端页面" : 输入动态文本、上传图片、选择话题标签，并点击发布
+"APP前端页面" -> "社区内容发布服务" : 发起发布动态请求，包含内容、图片、标签及用户标识
+"社区内容发布服务" -> "用户数据库" : 查询用户昵称、头像等基本信息
+"用户数据库" --> "社区内容发布服务" : 返回用户基本信息
+"社区内容发布服务" -> "社区内容数据库" : 保存动态内容与用户信息，初始状态为“待审核”
+"社区内容数据库" --> "社区内容发布服务" : 返回保存成功记录与内容ID
+"社区内容发布服务" -> "内容审核服务" : 提交动态内容（文本与图片）进行审核
+"内容审核服务" -> "第三方内容审核系统" : 调用接口，进行机审
+"第三方内容审核系统" --> "内容审核服务" : 返回机审结果（通过/需人工复核/驳回）
+"内容审核服务" -> "社区内容发布服务" : 通知审核结果
+"社区内容发布服务" -> "社区内容数据库" : 根据审核结果更新动态状态为“已发布”或“审核失败”
+"社区内容数据库" --> "社区内容发布服务" : 返回更新成功状态
+"社区内容发布服务" --> "APP前端页面" : 返回动态发布成功结果
+"APP前端页面" --> "用户" : 展示发布成功提示，并刷新社区动态流
+@enduml

@@ -1,0 +1,52 @@
+@startuml
+title 时序图：处理支付
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP前端界面"
+control "支付服务"
+control "会员服务"
+database "用户数据库"
+participant "第三方支付网关"
+"用户" -> "APP前端界面" : 在会员词书详情页或会员中心点击开通会员或支付按钮
+"APP前端界面" -> "支付服务" : 发起创建支付订单请求，包含用户ID、商品信息（如会员类型、时长）
+"支付服务" -> "用户数据库" : 查询请求用户的基本信息用于订单关联
+"用户数据库" --> "支付服务" : 返回用户信息
+"支付服务" -> "第三方支付网关" : 调用接口，发起支付预下单请求
+"第三方支付网关" --> "支付服务" : 返回支付所需的参数（如预支付ID、支付签名等）
+"支付服务" --> "APP前端界面" : 返回支付参数及调起支付指令
+"APP前端界面" -> "第三方支付网关" : 根据支付参数调起第三方支付界面（如微信/支付宝）
+"用户" -> "第三方支付网关" : 在第三方支付界面完成密码验证或生物识别支付
+"第三方支付网关" -> "支付服务" : 异步通知支付结果（成功/失败）
+"支付服务" --> "第三方支付网关" : 验证异步通知的合法性并返回确认
+"支付服务" -> "会员服务" : 通知支付成功，请求开通或更新用户会员权限
+"会员服务" -> "用户数据库" : 更新用户的会员状态及有效期
+"用户数据库" --> "会员服务" : 返回更新成功状态
+"会员服务" --> "支付服务" : 返回权限开通成功确认
+"支付服务" --> "APP前端界面" : 返回最终支付成功状态及会员权益生效提示
+"APP前端界面" --> "用户" : 展示支付成功页面并更新界面会员状态
+@enduml

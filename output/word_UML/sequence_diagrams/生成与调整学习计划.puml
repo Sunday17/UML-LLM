@@ -1,0 +1,57 @@
+@startuml
+title 时序图：生成与调整学习计划
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+        ' 第一个参与者使用特殊标记
+actor "用户" << (A,#FFAAAA) >> order 0
+boundary "APP学习界面"
+control "学习计划服务"
+control "用户档案服务"
+control "词书管理服务"
+control "记忆算法引擎"
+database "用户数据库"
+database "词书数据库"
+database "学习记录数据库"
+"用户" -> "APP学习界面" : 进入学习计划设置页面
+"APP学习界面" -> "用户档案服务" : 请求用户当前学习目标与设置
+"用户档案服务" -> "用户数据库" : 查询用户档案信息
+"用户数据库" --> "用户档案服务" : 返回用户学习目标、每日背词量、考试时间
+"用户档案服务" --> "APP学习界面" : 返回用户当前学习设置数据
+"APP学习界面" -> "词书管理服务" : 请求当前学习词书详情
+"词书管理服务" -> "词书数据库" : 查询词书词汇总量与结构
+"词书数据库" --> "词书管理服务" : 返回词书详情数据
+"词书管理服务" --> "APP学习界面" : 返回当前学习词书信息
+"用户" -> "APP学习界面" : 提交调整后的每日新学单词量/目标词书/考试时间参数
+"APP学习界面" -> "学习计划服务" : 发送学习计划生成请求，携带用户设置参数与词书数据
+"学习计划服务" -> "记忆算法引擎" : 请求基于艾宾浩斯算法计算每日新学与复习任务分配
+"记忆算法引擎" -> "学习记录数据库" : 查询用户历史学习记录与单词掌握等级
+"学习记录数据库" --> "记忆算法引擎" : 返回用户历史学习数据与单词掌握状态
+"记忆算法引擎" --> "学习计划服务" : 返回基于算法生成的每日任务规划表
+"学习计划服务" -> "用户数据库" : 更新用户学习计划配置
+"用户数据库" --> "学习计划服务" : 返回更新成功状态
+"学习计划服务" --> "APP学习界面" : 返回生成的学习计划详情（今日新学/复习任务量）
+"APP学习界面" --> "用户" : 展示更新后的今日学习任务进度条与计划详情
+@enduml
