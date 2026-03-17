@@ -1,7 +1,7 @@
 import json
 import re
 from graph.state import UMLState
-from utils.llm import openai_chat_completion
+from utils.llm import openai_chat_completion, openai_reasoning_completion
 from prompts.templates import get_template
 
 def extract_entities_node(state: UMLState) -> dict:
@@ -19,7 +19,8 @@ def extract_entities_node(state: UMLState) -> dict:
         system_prompt=system_msg, 
         history=[{"role": "user", "content": prompt}]
     )
-    
+    #res = openai_reasoning_completion(prompt)
+
     try:
         data = json.loads(res)
         actors = list(data.keys())

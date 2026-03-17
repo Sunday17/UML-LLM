@@ -17,7 +17,6 @@ def extract_seq_participants_node(state: UMLState) -> dict:
     
     for uc in usecases:
         print(f"  -> 分析用例参与者: [{uc}]")
-        # [修改] 将 input_text 传入模板
         prompt = prompt_tpl.format(
             input_text=input_text, 
             current_usecase=uc, 

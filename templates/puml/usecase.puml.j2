@@ -18,38 +18,32 @@ skinparam actor {
 {% for actor in actors %}
 actor "{{ actor }}"
 {% endfor %}
-rectangle "系统核心功能" {
 {% for uc in usecases %}
-    usecase "{{ uc }}"
+usecase "{{ uc }}"
 {% endfor %}
-}
 {% for actor, ucs in relationships.association.items() %}
-    {% for uc in ucs %}
+{% for uc in ucs %}
 "{{ actor }}" -- "{{ uc }}"
-    {% endfor %}
 {% endfor %}
-
+{% endfor %}
 {% for base, targets in relationships.inclusion.items() %}
-    {% for target in targets %}
+{% for target in targets %}
 "{{ base }}" ..> "{{ target }}" : <<include>>
-    {% endfor %}
 {% endfor %}
-
+{% endfor %}
 {% for base, extensions in relationships.extension.items() %}
-    {% for ext in extensions %}
+{% for ext in extensions %}
 "{{ base }}" <.. "{{ ext }}" : <<extend>>
-    {% endfor %}
 {% endfor %}
-
+{% endfor %}
 {% for parent, children in relationships.uc_gen.items() %}
-    {% for child in children %}
+{% for child in children %}
 "{{ parent }}" <|-- "{{ child }}"
-    {% endfor %}
 {% endfor %}
-
+{% endfor %}
 {% for parent, children in relationships.act_gen.items() %}
-    {% for child in children %}
+{% for child in children %}
 "{{ parent }}" <|-- "{{ child }}"
-    {% endfor %}
+{% endfor %}
 {% endfor %}
 @enduml

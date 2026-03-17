@@ -5,114 +5,124 @@ skinparam linetype ortho
 skinparam nodesep 50
 skinparam ranksep 50
 
-' ==========================================
-' 1. 定义类及其属性与方法
-' ==========================================
-
 class "User" {
   ' 属性区 (默认设为 private: -)
-  - 用户名;
-  - 密码;
-  - 用户类型;
-  
+  - user_id;
+  - name;
+  - card_number;
+  - borrow_permission;
   ' 方法区 (默认设为 public: +)
-  + 登录();
-  + 查询借阅记录();
-}
-
-class "Book" {
-  ' 属性区 (默认设为 private: -)
-  - 书名;
-  - 作者;
-  - ISBN;
-  - 可借状态;
-  
-  ' 方法区 (默认设为 public: +)
-  + 检索();
-  + 借阅();
-  + 归还();
-}
-
-class "BorrowRecord" {
-  ' 属性区 (默认设为 private: -)
-  - 借阅日期;
-  - 应还日期;
-  - 实际归还日期;
-  - 逾期天数;
-  
-  ' 方法区 (默认设为 public: +)
-  + 计算逾期();
-  + 更新状态();
-}
-
-class "Admin" {
-  ' 属性区 (默认设为 private: -)
-  - 管理员ID;
-  - 权限级别;
-  
-  ' 方法区 (默认设为 public: +)
-  + 录入图书();
-  + 修改图书信息();
-  + 下架图书();
+  + searchBook();
+  + borrowBook();
+  + returnBook();
+  + viewBorrowRecords();
 }
 
 class "Student" {
   ' 属性区 (默认设为 private: -)
-  - 学号;
-  - 学院;
-  - 可借数量;
-  
+  - student_id;
+  - card_number;
+  - borrow_permission;
   ' 方法区 (默认设为 public: +)
-  + 借阅图书();
-  + 查询当前借阅();
+  + searchBook();
+  + borrowBook();
+  + returnBook();
+  + viewBorrowRecords();
 }
 
 class "Teacher" {
   ' 属性区 (默认设为 private: -)
-  - 工号;
-  - 院系;
-  - 可借数量;
-  
+  - teacher_id;
+  - card_number;
+  - borrow_permission;
   ' 方法区 (默认设为 public: +)
-  + 借阅图书();
-  + 查询历史记录();
+  + searchBook();
+  + borrowBook();
+  + returnBook();
+  + viewBorrowRecords();
 }
 
+class "Administrator" {
+  ' 属性区 (默认设为 private: -)
+  - admin_id;
+  - permissions;
+  ' 方法区 (默认设为 public: +)
+  + addBook();
+  + updateBookInfo();
+  + removeBook();
+  + viewBorrowRecords();
+}
 
+class "Book" {
+  ' 属性区 (默认设为 private: -)
+  - book_id;
+  - title;
+  - author;
+  - isbn;
+  - status;
+  - location;
+  ' 方法区 (默认设为 public: +)
+  + getStatus();
+  + setStatus();
+  + isAvailable();
+}
 
-' ==========================================
-' 2. 定义类之间的关系
-' ==========================================
+class "BorrowRecord" {
+  ' 属性区 (默认设为 private: -)
+  - record_id;
+  - user_id;
+  - book_id;
+  - borrow_date;
+  - due_date;
+  - status;
+  ' 方法区 (默认设为 public: +)
+  + createBorrowRecord();
+  + validateBorrow();
+}
+
+class "ReturnRecord" {
+  ' 属性区 (默认设为 private: -)
+  - return_id;
+  - borrow_record_id;
+  - return_date;
+  - overdue_fee;
+  ' 方法区 (默认设为 public: +)
+  + createReturnRecord();
+  + calculateOverdue();
+}
+
+class "OverdueRecord" {
+  ' 属性区 (默认设为 private: -)
+  - overdue_id;
+  - borrow_record_id;
+  - overdue_days;
+  - fee;
+  ' 方法区 (默认设为 public: +)
+  + generateOverdueRecord();
+}
 
 ' 2.1 Association (关联关系: --)
 
-"User" -- "Book"
+"User" o-- "BorrowRecord"
 
-"User" -- "BorrowRecord"
+"User" o-- "ReturnRecord"
 
-"Admin" -- "Book"
+"User" o-- "OverdueRecord"
 
+"Book" o-- "BorrowRecord"
 
-' 2.2 Generalization (泛化/继承关系: --|>)
-' 注意：PlantUML 中箭头指向父类，所以如果是 ["子类", "父类"]，用 --|>
+"Book" o-- "ReturnRecord"
+
+"Book" o-- "OverdueRecord"
+
 
 "Student" --|> "User"
 
 "Teacher" --|> "User"
 
-
-' 2.3 Composition (组合关系: *--)
-' 注意：强整体拥有部分，如果是 ["整体", "部分"]，用 *--
-
-"BorrowRecord" *-- "Book"
+"Administrator" --|> "User"
 
 
-' 2.4 Aggregation (聚合关系: o--)
-' 注意：弱整体包含部分，如果是 ["整体", "部分"]，用 o--
-
-
-' 2.5 Dependency (依赖关系: ..>)
-' 注意：源类依赖目标类，如果是 ["源类", "目标类"]，用 ..>
 
 
 @enduml

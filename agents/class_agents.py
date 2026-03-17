@@ -13,6 +13,7 @@ def extract_classes_node(state: UMLState) -> dict:
     prompt = prompt_tpl.format(input_text=input_text)
     
     res = openai_chat_completion("你是一个UML专家", [{"role": "user", "content": prompt}])
+    #res = openai_reasoning_completion(prompt)
     try:
         data = json.loads(res)
         classes = data.get("classes", [])
@@ -33,8 +34,8 @@ def extract_class_details_node(state: UMLState) -> dict:
     prompt_tpl = get_template("cd_attr_method_prompt", "提取属性和方法：{\"class_details\":{\"类名\":{\"attributes\":[],\"methods\":[]}}}")
     prompt = prompt_tpl.format(input_text=state["input_text"], classes=classes)
     
-    res = openai_chat_completion("你是一个UML专家", [{"role": "user", "content": prompt}])
-    #res = openai_reasoning_completion(prompt)
+    #res = openai_chat_completion("你是一个UML专家", [{"role": "user", "content": prompt}])
+    res = openai_reasoning_completion(prompt)
     #print(res)
     try:
         data = json.loads(res)

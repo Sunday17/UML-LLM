@@ -1,11 +1,8 @@
 # graph/workflow.py
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
-
 from graph.state import UMLState
-# 导入用例图 Agents
 from agents.usecase_agents import extract_entities_node, extract_relationships_node
-# 导入新增的类图 Agents
 from agents.class_agents import extract_classes_node, extract_class_details_node, extract_class_rels_node
 from agents.sequence_agents import extract_seq_participants_node, extract_seq_messages_node
 
@@ -13,7 +10,7 @@ def route_start(state: UMLState):
     diagram = state.get("current_diagram")
     if diagram == "usecase": return "entity_agent"
     elif diagram == "class": return "class_entity_agent"
-    elif diagram == "sequence": return "seq_participant_agent" # 新增路由分支
+    elif diagram == "sequence": return "seq_participant_agent" 
     return END
 
 def build_graph():
