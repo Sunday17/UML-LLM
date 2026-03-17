@@ -1,0 +1,84 @@
+@startuml
+title 时序图：查询借阅记录
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+
+
+    
+        ' 第一个参与者使用特殊标记
+        
+actor "师生" << (A,#FFAAAA) >> order 0
+        
+    
+
+    
+        
+boundary "借阅查询前端"
+        
+    
+
+    
+        
+control "借阅管理服务"
+        
+    
+
+    
+        
+database "借阅记录数据库"
+        
+    
+
+
+
+
+    
+        
+"师生" -> "借阅查询前端" : 发起查询借阅记录请求
+        
+    
+        
+"借阅查询前端" -> "借阅管理服务" : 发送借阅记录查询请求
+        
+    
+        
+"借阅管理服务" -> "借阅记录数据库" : 查询用户借阅记录数据
+        
+    
+        
+"借阅记录数据库" --> "借阅管理服务" : 返回借阅记录查询结果
+        
+    
+        
+"借阅管理服务" --> "借阅查询前端" : 返回处理后的借阅记录列表
+        
+    
+        
+"借阅查询前端" --> "师生" : 展示借阅记录查询结果
+        
+    
+
+@enduml

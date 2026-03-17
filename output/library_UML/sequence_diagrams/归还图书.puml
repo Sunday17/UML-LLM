@@ -1,0 +1,120 @@
+@startuml
+title 时序图：归还图书
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+
+
+    
+        ' 第一个参与者使用特殊标记
+        
+actor "师生" << (A,#FFAAAA) >> order 0
+        
+    
+
+    
+        
+boundary "图书归还界面"
+        
+    
+
+    
+        
+control "借阅管理服务"
+        
+    
+
+    
+        
+database "图书数据库"
+        
+    
+
+    
+        
+control "逾期计算模块"
+        
+    
+
+    
+        
+database "用户数据库"
+        
+    
+
+
+
+
+    
+        
+"师生" -> "图书归还界面" : 发起图书归还请求（如扫描图书条形码）
+        
+    
+        
+"图书归还界面" -> "借阅管理服务" : 发送图书归还事务请求
+        
+    
+        
+"借阅管理服务" -> "用户数据库" : 查询该图书当前借阅记录以验证
+        
+    
+        
+"用户数据库" --> "借阅管理服务" : 返回图书借阅记录及应还日期
+        
+    
+        
+"借阅管理服务" -> "图书数据库" : 更新该图书状态为可借
+        
+    
+        
+"图书数据库" --> "借阅管理服务" : 返回图书状态更新成功结果
+        
+    
+        
+"借阅管理服务" -> "逾期计算模块" : 请求计算借阅逾期天数与费用
+        
+    
+        
+"逾期计算模块" --> "借阅管理服务" : 返回逾期计算结果（含天数、费用）
+        
+    
+        
+"借阅管理服务" -> "用户数据库" : 更新借阅记录状态为已归还，并记录逾期信息
+        
+    
+        
+"用户数据库" --> "借阅管理服务" : 返回记录更新成功结果
+        
+    
+        
+"借阅管理服务" --> "图书归还界面" : 返回归还成功结果及逾期信息（如有）
+        
+    
+        
+"图书归还界面" --> "师生" : 展示归还成功及详细结果信息
+        
+    
+
+@enduml

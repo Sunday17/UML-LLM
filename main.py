@@ -1,10 +1,10 @@
 import os
 import json
 from graph.workflow import build_graph
-from tools.generator import generate_usecase_outputs, generate_class_outputs, generate_sequence_outputs
+from tools.generator import generate_usecase_outputs, generate_class_outputs, generate_sequence_outputs, render_plantuml_to_image
 from tools.puml_parser import sync_puml_to_state
 
-INPUT_FILE_PATH = "datasets/test.txt"
+INPUT_FILE_PATH = "datasets/pet.txt"
 
 def handle_interrupt_and_resume(app, config):
     """处理断点拦截，并负责唤醒图引擎走完后续流程"""
@@ -67,14 +67,14 @@ def handle_interrupt_and_resume(app, config):
 
 
 def wait_for_puml_edit_and_sync(app, config, target, puml_path):
-    """等待用户在外部编辑器修改 PUML，然后逆向同步回 State"""
+    """等待用户在外部编辑器修改 PUML，然后逆向同步回 State，并重新渲染图片"""
     print("\n" + "🌟"*20)
     print(f"[{target.upper()}] 产物已生成完毕！")
     print(f"📄 文件位置: {puml_path}")
     print("👉 如果大模型生成的属性或关系不符合预期，请直接在编辑器中修改该 .puml 文件。")
     print("👉 如果不需要修改，直接按回车跳过。")
     
-    choice = input("修改完成后，输入 'y' 并回车同步数据 (直接回车表示不修改): ")
+    choice = input("修改完成后，输入 'y' 并回车同步数据与渲染 (直接回车表示不修改): ")
     
     if choice.strip().lower() == 'y':
         try:
@@ -82,14 +82,24 @@ def wait_for_puml_edit_and_sync(app, config, target, puml_path):
                 modified_puml = f.read()
             
             current_state = app.get_state(config).values
-            # 调用我们在上一阶段编写的逆向同步工具
+            # 调用逆向同步工具
             updated_fields = sync_puml_to_state(target, modified_puml, current_state)
             
             if updated_fields:
                 app.update_state(config, updated_fields)
                 print("✅ 逆向同步完成，最新的设计已写入全局记忆！")
+            
+
+            print("🔄 检测到文件更新，正在重新渲染高清图片...")
+            
+            # 将 .puml 后缀替换为 .png 得到图片保存路径
+            img_path = puml_path.replace(".puml", ".png")
+            
+            # 调用 tools/generator.py 中的渲染方法
+            render_plantuml_to_image(modified_puml, img_path)
+            
         except Exception as e:
-            print(f"❌ 读取或同步 PUML 失败: {e}")
+            print(f"❌ 读取、同步或渲染 PUML 失败: {e}")
     print("🌟"*20 + "\n")
 
 
@@ -163,7 +173,8 @@ def main():
             
             # 3. 获取该阶段最终状态，并生成对应产物
             final_state = app.get_state(config).values
-            puml_output_path = f"output/{file_name}_{target}.puml"
+            #puml_output_path = f"output/{file_name}_{target}.puml"
+            puml_output_path = os.path.join("output", f"{file_name}_UML", f"{file_name}_{target}.puml")
             
             if target == "usecase":
                 generate_usecase_outputs(final_state, "output", file_name)

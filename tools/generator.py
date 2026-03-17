@@ -69,6 +69,9 @@ def _render_and_save(target: str, data_context: dict, output_dir: str, file_name
 
 def generate_usecase_outputs(state: dict, output_dir: str, file_name_prefix: str):
     """专用生成：用例图产物"""
+    # 【修改】动态构建专属 UML 文件夹路径
+    uml_dir = os.path.join(output_dir, f"{file_name_prefix}_UML")
+    
     rels = state.get("relationships", {})
     data_context = {
         "actors": state.get("actors", []),
@@ -82,16 +85,19 @@ def generate_usecase_outputs(state: dict, output_dir: str, file_name_prefix: str
             "association": state.get("entities", {}) 
         }
     }
-    _render_and_save("usecase", data_context, output_dir, file_name_prefix)
+    _render_and_save("usecase", data_context, uml_dir, file_name_prefix)
 
 def generate_class_outputs(state: dict, output_dir: str, file_name_prefix: str):
     """专用生成：类图产物"""
+    # 【修改】动态构建专属 UML 文件夹路径
+    uml_dir = os.path.join(output_dir, f"{file_name_prefix}_UML")
+    
     data_context = {
         "classes": state.get("classes", []),
         "class_details": state.get("class_details", {}),
         "class_relationships": state.get("class_relationships", {})
     }
-    _render_and_save("class", data_context, output_dir, file_name_prefix)
+    _render_and_save("class", data_context, uml_dir, file_name_prefix)
 
 
 def generate_sequence_outputs(state: dict, output_dir: str, file_name_prefix: str):
@@ -101,8 +107,9 @@ def generate_sequence_outputs(state: dict, output_dir: str, file_name_prefix: st
         print("⚠️ 没找到时序图数据。")
         return
 
-    # 为当前项目的时序图单独建一个文件夹
-    seq_dir = os.path.join(output_dir, f"{file_name_prefix}_sequence_diagrams")
+    # 【核心修改】将时序图子文件夹放在专属 UML 文件夹内
+    uml_dir = os.path.join(output_dir, f"{file_name_prefix}_UML")
+    seq_dir = os.path.join(uml_dir, "sequence_diagrams")
     os.makedirs(seq_dir, exist_ok=True)
     
     print(f"\n📂 正在将 {len(sequence_data)} 个时序图打包至: {seq_dir}")
@@ -115,7 +122,8 @@ def generate_sequence_outputs(state: dict, output_dir: str, file_name_prefix: st
         safe_name = uc_name.replace("/", "").replace("\\", "")
         
         data_context = {
-            "actors": data.get("participants", []),
+            "usecase_name": uc_name, # 补充用例名称，以防模板 title 使用
+            "participants": data.get("participants", []), # 修正：模板使用的是 participants
             "interactions": data.get("interactions", [])
         }
         

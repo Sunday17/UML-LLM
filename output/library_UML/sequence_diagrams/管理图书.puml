@@ -1,0 +1,84 @@
+@startuml
+title 时序图：管理图书
+skinparam maxMessageSize 150
+skinparam sequenceMessageAlign center
+autonumber "<b>[00]"
+
+skinparam sequence {
+    ArrowColor #336699
+    ActorBorderColor #336699
+    LifeLineBorderColor #336699
+    LifeLineBackgroundColor #E2E8F0
+    
+    ParticipantBorderColor #336699
+    ParticipantBackgroundColor #EBF4FA
+    ParticipantFontColor #333333
+    ParticipantFontSize 14
+    
+    DatabaseBorderColor #336699
+    DatabaseBackgroundColor #EBF4FA
+    DatabaseFontColor #333333
+    
+    BoundaryBorderColor #336699
+    BoundaryBackgroundColor #EBF4FA
+    
+    ControlBorderColor #336699
+    ControlBackgroundColor #EBF4FA
+}
+
+
+    
+        ' 第一个参与者使用特殊标记
+        
+actor "管理员" << (A,#FFAAAA) >> order 0
+        
+    
+
+    
+        
+boundary "图书管理前端页面"
+        
+    
+
+    
+        
+control "图书管理服务"
+        
+    
+
+    
+        
+database "图书数据库"
+        
+    
+
+
+
+
+    
+        
+"管理员" -> "图书管理前端页面" : 输入图书信息并提交添加请求
+        
+    
+        
+"图书管理前端页面" -> "图书管理服务" : 发送创建图书请求
+        
+    
+        
+"图书管理服务" -> "图书数据库" : 执行图书记录插入操作
+        
+    
+        
+"图书数据库" --> "图书管理服务" : 返回插入操作结果
+        
+    
+        
+"图书管理服务" --> "图书管理前端页面" : 返回创建图书响应
+        
+    
+        
+"图书管理前端页面" --> "管理员" : 显示图书添加结果通知
+        
+    
+
+@enduml

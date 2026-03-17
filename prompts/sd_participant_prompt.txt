@@ -1,21 +1,27 @@
-# Role
-你是一位精通 UML 时序图设计的系统架构师。
+你正在为一个软件系统绘制UML时序图。请根据提供的【原始需求文本】，为指定的【当前分析用例】提取参与交互的实体（Participants）。
 
-# Task
-基于全局的角色列表和实体类列表，挑选出完成【当前用例】所必须参与的“角色”和“实体对象”。
+# 提取核心规则：
+1. 【打破黑盒限制】：绝对不要将参与者局限于提供的【已有类】中！【已有角色】和【已有类】仅仅作为业务名词的命名参考，以保持系统整体的一致性。
+2. 【架构层级推演】：时序图展示的是动态交互，你必须结合原始文本，推演出该用例完整执行需要经过的系统模块。通常包括：
+   - 发起动作的 Actor（如：用户、管理员）
+   - 交互边界层 Boundary（如：前端页面、客户端、APP终端）
+   - 控制/业务逻辑层 Control（如：XX服务、XX控制器模块）
+   - 数据持久层 Database（如：数据库、文件系统、缓存）
+   - 外部依赖 External（如：第三方支付网关）
 
-# Rules
-1. 参与者只能从我提供的 Global Actors 和 Global Classes 中挑选，绝不能捏造不存在的类。
-2. 挑选出的对象必须是真正参与该用例交互的上下文实体。
+# 输入数据：
+- 原始需求文本：{input_text}
+- 当前分析用例：{current_usecase}
+- 命名参考(已有角色)：{actors}
+- 命名参考(已有类)：{classes}
 
-# Input Data
-当前分析的用例：{current_usecase}
-全局有效角色 (Global Actors)：{actors}
-全局有效实体类 (Global Classes)：{classes}
-
-# Output Requirement
-严格输出 JSON，不要任何解释。
-JSON 格式：
+# 输出要求：
+直接返回JSON格式，不要输出任何解释说明：
 {{
-    "participants": ["角色或类名1", "角色或类名2"]
+    "participants": [
+        {{"name": "用户", "type": "actor"}},
+        {{"name": "借阅前端页面", "type": "boundary"}},
+        {{"name": "图书管理服务", "type": "control"}},
+        {{"name": "图书数据库", "type": "database"}}
+    ]
 }}

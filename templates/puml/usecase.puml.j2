@@ -2,7 +2,6 @@
 title 自动生成：系统用例图
 left to right direction
 
-' --- 1. 优化排版与样式参数 ---
 skinparam packageStyle rectangle
 skinparam nodesep 15
 skinparam ranksep 40
@@ -16,52 +15,38 @@ skinparam actor {
     BorderColor #333333
 }
 
-' --- 2. 定义参与者 ---
 {% for actor in actors %}
 actor "{{ actor }}"
 {% endfor %}
-
-' --- 3. 定义系统边界与用例 ---
-' 【优化点】使用 rectangle 包裹用例，强制参与者在左外侧，用例在右内侧，排版瞬间整洁
 rectangle "系统核心功能" {
 {% for uc in usecases %}
     usecase "{{ uc }}"
 {% endfor %}
 }
-
-' --- 4. 参与者与用例的关联 ---
 {% for actor, ucs in relationships.association.items() %}
     {% for uc in ucs %}
 "{{ actor }}" -- "{{ uc }}"
     {% endfor %}
 {% endfor %}
 
-' --- 5. 包含关系 (Include) ---
-' 规范：基础用例 -> 包含用例
 {% for base, targets in relationships.inclusion.items() %}
     {% for target in targets %}
 "{{ base }}" ..> "{{ target }}" : <<include>>
     {% endfor %}
 {% endfor %}
 
-' --- 6. 扩展关系 (Extend) ---
-' 规范：扩展用例 -> 基础用例
-' 【核心修复】使用 <.. 语法。这会让 PlantUML 把 Base 画在左边，Ext 画在右边，但箭头反向指向 Base。完美解决布局混乱！
 {% for base, extensions in relationships.extension.items() %}
     {% for ext in extensions %}
 "{{ base }}" <.. "{{ ext }}" : <<extend>>
     {% endfor %}
 {% endfor %}
 
-' --- 7. 用例泛化 ---
-' 【排版修复】使用 <|-- 让父类在左，子类在右，箭头指向父类
 {% for parent, children in relationships.uc_gen.items() %}
     {% for child in children %}
 "{{ parent }}" <|-- "{{ child }}"
     {% endfor %}
 {% endfor %}
 
-' --- 8. 参与者泛化 ---
 {% for parent, children in relationships.act_gen.items() %}
     {% for child in children %}
 "{{ parent }}" <|-- "{{ child }}"

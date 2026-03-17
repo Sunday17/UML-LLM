@@ -1,0 +1,63 @@
+@startuml
+title 自动生成：系统用例图
+left to right direction
+
+skinparam packageStyle rectangle
+skinparam nodesep 15
+skinparam ranksep 40
+skinparam usecase {
+    BackgroundColor #F9F9F9
+    BorderColor #333333
+    ArrowColor #666666
+}
+skinparam actor {
+    BackgroundColor #FAFAFA
+    BorderColor #333333
+}
+
+
+actor "师生"
+
+actor "管理员"
+
+rectangle "系统核心功能" {
+
+    usecase "借阅图书"
+
+    usecase "检索图书"
+
+    usecase "管理图书"
+
+    usecase "归还图书"
+
+    usecase "查询借阅记录"
+
+}
+
+    
+"师生" -- "检索图书"
+    
+"师生" -- "借阅图书"
+    
+"师生" -- "归还图书"
+    
+"师生" -- "查询借阅记录"
+    
+
+    
+"管理员" -- "管理图书"
+    
+
+
+
+    
+"借阅图书" ..> "检索图书" : <<include>>
+    
+
+
+
+
+
+
+
+@enduml
