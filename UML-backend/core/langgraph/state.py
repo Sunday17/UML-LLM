@@ -1,0 +1,27 @@
+# graph/state.py
+from typing import TypedDict, List, Dict, Any, Optional
+
+class UMLState(TypedDict):
+    """LangGraph 运行时的全局状态 (升级为支持多图表 + RAG)"""
+    input_text: str                   # 模块级需求（当前要处理的需求文本）
+    original_requirement: str         # 原始整体需求（用于 RAG 检索）
+    project_id: Optional[int]         # 项目ID（用于 RAG 检索）
+
+    current_diagram: str        # 目标图表，例如 ["usecase"]
+
+    # --- 用例图 (Use Case) 数据 ---
+    entities: Dict[str, List[str]]    # {角色: [用例]}
+    actors: List[str]                 # 独立的角色列表
+    usecases: List[str]               # 独立的用例列表
+    relationships: Dict[str, Any]     # include, extend, generalization 等关系
+    confirmed_actors: Optional[List[str]]   # 已确认的角色列表（禁止添加新角色）
+    confirmed_usecases: Optional[List[str]] # 已确认的用例列表（禁止添加新用例）
+
+    # --- 类图 (Class) 数据 ---
+    classes: List[str]                # 提取的实体类列表 (需人工确认)
+    class_details: Dict[str, Any]     # 类的属性和方法，例如 {"User": {"attributes": [], "methods": []}}
+    class_relationships: Dict[str, Any] # 类之间的关系 (泛化、关联、依赖等)
+
+    # --- 时序图 (Sequence) 数据 ---
+    selected_usecases: List[str]      # 前端选中的用例列表（时序图专用）
+    sequence_data: Dict[str, Dict[str, Any]]  # {用例名: {participants, interactions}}
